@@ -236,26 +236,12 @@ class modbudget extends DolibarrModules
 		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		// $r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>0,			                // Put 0 if this is a top menu
-								'type'=>'top',			                // This is a Top menu entry
-								'titre'=>'Budget',
-								'mainmenu'=>'budget',
-								'leftmenu'=>'budget',
-								'url'=>'/budget/index.php',
-								'langs'=>'budget@budget',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-								'position'=>100,
-								'enabled'=>'$conf->budget->enabled',	// Define condition to show or hide menu entry. Use '$conf->budget->enabled' if entry must be visible if module is enabled.
-								'perms'=>'$user->rights->budget->read',			                // Use 'perms'=>'$user->rights->budget->level1->level2' if you want your menu with a permission rules
-								'target'=>'',
-								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		$r++;
-
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=budget',			                // Put 0 if this is a top menu
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy',			                // Put 0 if this is a top menu
 								'type'=>'left',			                // This is a Top menu entry
 								'titre'=>$langs->trans('ListBudget'),
 								'mainmenu'=>'budget',
 								'leftmenu'=>'budgetlist',
-								'url'=>'/budget/index.php',
+								'url'=>'/budget/budget.php',
 								'langs'=>'budget@budget',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>10,
 								'enabled'=>'$conf->budget->enabled',	// Define condition to show or hide menu entry. Use '$conf->budget->enabled' if entry must be visible if module is enabled.
@@ -264,12 +250,12 @@ class modbudget extends DolibarrModules
 								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=budget,fk_leftmenu=budgetlist',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=budget',
 								'type'=>'left',			                // This is a Top menu entry
 								'titre'=>$langs->trans('CreerBudget'),
 								'mainmenu'=>'budget',
-								'leftmenu'=>'budgetCreer',
-								'url'=>'/budget/index.php?action=create',
+								'leftmenu'=>'budgetlist',
+								'url'=>'/budget/budget.php?action=new',
 								'langs'=>'budget@budget',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>10,
 								'enabled'=>'$conf->budget->enabled',	// Define condition to show or hide menu entry. Use '$conf->budget->enabled' if entry must be visible if module is enabled.
