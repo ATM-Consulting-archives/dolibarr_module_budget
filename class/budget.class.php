@@ -96,6 +96,7 @@ class TBudget extends TObjetStd {
 											 	,'year'=>$year
 											 	,'month'=>$iMonth
 											 	,'budget'=>true
+											 	 ,'class'=>'budget'
 											);
 				}
 
@@ -112,12 +113,14 @@ class TBudget extends TObjetStd {
 					'value'=>$encours_mois_m1
 					,'month'=>$month
 					,'encours'=>true
+					 ,'class'=>'month'
 				);
 
 				$TValues[1]['values'][] = array(
 					'value'=>$encours
 					,'month'=>$month
 					,'encours'=>true
+					 ,'class'=>'month'
 				);
 				
 				$encours_mois_m1 = -$encours;
