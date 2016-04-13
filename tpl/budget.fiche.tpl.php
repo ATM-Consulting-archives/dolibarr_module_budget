@@ -5,6 +5,14 @@
 		<td>[budget.label;strconv=no]</td>
 	</tr>
 	<tr>
+		<td> [langs.trans(Project);strconv=no] </td>
+		<td>[budget.fk_project;strconv=no]</td>
+	</tr>
+	<tr>
+		<td> [langs.trans(Status);strconv=no] </td>
+		<td>[budget.statut;strconv=no]</td>
+	</tr>
+	<tr>
 		<td> [langs.trans(DateStart);strconv=no] </td>
 		<td>[budget.date_debut;strconv=no]</td>
 	</tr>

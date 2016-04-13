@@ -26,6 +26,31 @@ function _action(&$PDOdb) {
 	$action = GETPOST('action');
 	
 	switch($action) {
+		
+		case 'valid':
+			$id=(int)GETPOST('id');
+			$budget->load($PDOdb, $id);
+			$budget->statut = 1;
+			$budget->save($PDOdb);
+			
+			_fiche($PDOdb, $budget);
+			break;
+		case 'reject':
+			$id=(int)GETPOST('id');
+			$budget->load($PDOdb, $id);
+			$budget->statut = 3;
+			$budget->save($PDOdb);
+			
+			_fiche($PDOdb, $budget);
+			break;
+		case 'reopen':
+			$id=(int)GETPOST('id');
+			$budget->load($PDOdb, $id);
+			$budget->statut = 0;
+			$budget->save($PDOdb);
+			
+			_fiche($PDOdb, $budget);
+			break;
 		case 'new':
 		
 			_fiche($PDOdb, $budget, 'edit');
@@ -82,6 +107,8 @@ function _list(&$PDOdb)
 	$titre = $langs->trans('list').' '.$langs->trans('budgets');
 	$THide = array('rowid');
 		
+	$budget = new TBudget;
+		
 	echo $r->render($PDOdb, $sql, array(
 		'limit'=>array(
 			'nbLine'=>$conf->liste_limit
@@ -90,7 +117,9 @@ function _list(&$PDOdb)
 			'label'=>'<a href="?action=view&id=@rowid@" />'.img_picto('', 'object_label.png').' @label@</a>'
 			
 		)
-		,'translate'=>array()
+		,'translate'=>array(
+			'statut'=>$budget->TStatut
+		)
 		,'hide'=>$THide
 		,'liste'=>array(
 			'titre'=> $titre
@@ -169,6 +198,10 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	
 	dol_fiche_head();
 	
+	
+	dol_include_once('/core/class/html.formprojet.class.php');
+	$formProject = new FormProjets($db);
+	
 	$TForm=new TFormCore('auto','form_edit_budget','POST');
 	$TForm->Set_typeaff($mode);
 	
@@ -176,17 +209,28 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	
 	echo $TForm->hidden('action', 'save');
 
-	$TLine=array();
+	$TLine=$TButton=array();
 
 	if($mode == 'view') {
-		$TButton=array(
-			'<a class="butAction" href="?action=edit&id='.$budget->getId().'">'.$langs->trans('Modify').'</a>'
-		);
+		$TButton[] = '<a class="butAction" href="?action=list">'.$langs->trans('Liste').'</a>';
+	
+		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$budget->getId().'">'.$langs->trans('Valider').'</a>';
+		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$budget->getId().'">'.$langs->trans('Refuser').'</a>';
+		
+		if($budget->statut > 0)$TButton[] = '<a class="butAction" href="?action=reopen&id='.$budget->getId().'">'.$langs->trans('Reopen').'</a>';
+		else $TButton[]='<a class="butAction" href="?action=edit&id='.$budget->getId().'">'.$langs->trans('Modify').'</a>';
+		
+		$select_project = _get_project_link($budget->fk_project);
 	}
 	else{
-		$TButton=array(
-			$TForm->btsubmit($langs->trans('Valid'), 'bt_submit')
-		);
+		$TButton[]='<a class="butActionDelete" href="?action=view&id='.$budget->getId().'">'.$langs->trans('Cancel').'</a>';
+		
+		$TButton[]=$TForm->btsubmit($langs->trans('Valid'), 'bt_submit');
+		
+		
+		ob_start();
+		$formProject->select_projects(-1,$budget->fk_project, 'fk_project');
+		$select_project =ob_get_clean();
 	}
 
 	$TLine = _get_lines($PDOdb,$TForm, $budget);
@@ -202,6 +246,8 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 				'label'=>$TForm->texte('','label',$budget->label, 80,255)
 				,'date_debut'=>$TForm->calendrier('','date_debut',$budget->date_debut)
 				,'date_fin'=>$TForm->calendrier('','date_fin',$budget->date_fin)	
+				,'statut'=>$budget->TStatut[$budget->statut]
+				,'fk_project'=>$select_project
 			)
 			,'langs'=>$langs
 		)

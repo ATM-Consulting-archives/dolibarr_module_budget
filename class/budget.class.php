@@ -21,7 +21,7 @@ class TBudget extends TObjetStd {
 		$this->TStatut = array(
 			0=>'Brouillon'
 			,1=>'Validé'
-			,2=>'En attente de validation'
+			/*,2=>'En attente de validation'*/
 			,3=>'Refusé'
 		);
 
