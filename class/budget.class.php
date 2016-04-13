@@ -91,7 +91,12 @@ class TBudget extends TObjetStd {
 			foreach ($TMonth as $iMonth => $month) {
 				
 				if(!empty($TBudget[$year][$iMonth])) {
-						$TValues[0]['values'][] =$TValues[1]['values'][] = ' - ';
+						$TValues[0]['values'][] =$TValues[1]['values'][] = array(
+											 	'value'=>' - '
+											 	,'year'=>$year
+											 	,'month'=>$iMonth
+											 	,'budget'=>true
+											);
 				}
 
 				$encours = 0;
