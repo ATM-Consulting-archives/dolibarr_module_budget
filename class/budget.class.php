@@ -11,7 +11,8 @@ class TBudget extends TObjetStd {
         parent::set_table(MAIN_DB_PREFIX.'sig_budget');
 		parent::add_champs('date_debut, date_fin',array('type'=>'date', 'index'=>true));
 		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
-		parent::add_champs('statut',array('type'=>'integer'));
+		parent::add_champs('statut,user_valid,user_reject',array('type'=>'integer'));
+		parent::add_champs('amount',array('type'=>'float'));
 		
 		parent::_init_vars('label');
         parent::start();
@@ -27,6 +28,30 @@ class TBudget extends TObjetStd {
 
 	}
 	
+	function save(&$PDOdb) {
+		
+		$this->amount = 0;
+		
+		foreach($this->TBudgetLine as &$l) {
+			
+			$this->amount += $l->amount; 	
+		}
+		
+		parent::save($PDOdb);
+	}
+	
+	function libStatut() {
+		
+		return $this->TStatut[$this->statut];
+		
+	}
+	
+	function getNomUrl($picto=1) {
+		$url = '<a href="'.dol_buildpath('/budget/budget.php?action=view&id='.$this->getId(),1).'" />'.($picto ? img_picto('', 'object_label.png').' ' : '').$this->label.'</a>';
+		
+		return $url;
+	}
+	
 	function getAmountForCode($code_compta) {
 		
 		foreach($this->TBudgetLine as &$l) {
@@ -38,9 +63,10 @@ class TBudget extends TObjetStd {
 	}
 
 	function setAmountForCode($code_compta,$amount) {
-		foreach($this->TBudgetLine as &$l) {
+		foreach($this->TBudgetLine as $k=> &$l) {
 			if($l->code_compta == $code_compta) {
-				$l->amount = $amount;			
+				$l->amount = $amount;	
+				return $k;		
 			}
 		}
 		
@@ -50,12 +76,13 @@ class TBudget extends TObjetStd {
 		$this->TBudgetLine[$k]->code_compta = $code_compta;
 		$this->TBudgetLine[$k]->amount = $amount;
 		
+		return $k;
 	}
 	
-	static function getBudget(&$PDOdb, $fk_project, $byMonth = false) {
+	static function getBudget(&$PDOdb, $fk_project, $byMonth = false, $statut = 1) {
 		
 		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."sig_budget 
-		WHERE fk_project=".$fk_project." AND statut=1 ORDER BY date_debut ");
+		WHERE fk_project=".$fk_project." AND statut IN (".$statut.") ORDER BY date_debut ");
 		
 		$TBudget = array();
 		foreach($Tab as $row) {

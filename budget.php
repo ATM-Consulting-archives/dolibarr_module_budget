@@ -31,16 +31,22 @@ function _action(&$PDOdb) {
 			$id=(int)GETPOST('id');
 			$budget->load($PDOdb, $id);
 			$budget->statut = 1;
+			$budget->user_valid = $user->id;
+			
 			$budget->save($PDOdb);
 			
+			setEventMessage('Budget validé');
 			_fiche($PDOdb, $budget);
+			
+			
 			break;
 		case 'reject':
 			$id=(int)GETPOST('id');
 			$budget->load($PDOdb, $id);
 			$budget->statut = 3;
+			$budget->user_reject = $user->id;
 			$budget->save($PDOdb);
-			
+			setEventMessage('Budget refusé');
 			_fiche($PDOdb, $budget);
 			break;
 		case 'reopen':
@@ -235,11 +241,13 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 
 	$TLine = _get_lines($PDOdb,$TForm, $budget);
 
+	$TBudget = TBudget::getBudget($PDOdb, $budget->fk_project,false, '0,1,3');
 	
 	echo $TBS->render('tpl/budget.fiche.tpl.php',
 		array(
 			'line'=>$TLine
 			,'buttons'=>$TButton
+			,'budgets'=>$TBudget
 		)
 		,array(
 			'budget'=>array(
