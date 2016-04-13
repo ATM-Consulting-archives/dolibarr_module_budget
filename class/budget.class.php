@@ -52,6 +52,24 @@ class TBudget extends TObjetStd {
 		
 	}
 	
+	static function getBudget(&$PDOdb, $fk_project, $byMonth = false) {
+		
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."sig_budget 
+		WHERE fk_project=".$fk_project." AND statut=1 ORDER BY date_debut ");
+		
+		$TBudget = array();
+		foreach($Tab as $row) {
+			
+			$budget=new TBudget;
+			$budget->load($PDOdb, $row->rowid);
+			
+			if($byMonth)$TBudget[(int)date('m', $budget->date_debut)] = $budget;
+			else $TBudget[] = $budget;
+		}
+		
+		return $TBudget;
+	}
+	
 }
 
 /**
