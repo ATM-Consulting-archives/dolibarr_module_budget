@@ -79,6 +79,50 @@ class TBudget extends TObjetStd {
 		return $k;
 	}
 	
+	static function getEncours(&$TReport, &$TDate, &$TBudget) {
+		$ca_mois=0;
+		
+		$TValues=array();
+		$TValues[1] = $TValues[0] = array('total'=>' - ','values'=>array());
+		
+		$encours_mois_m1 = 0;
+		
+		foreach($TDate as $year => $TMonth) {
+			foreach ($TMonth as $iMonth => $month) {
+				
+				if(!empty($TBudget[$year][$iMonth])) {
+						$TValues[0]['values'][] =$TValues[1]['values'][] = ' - ';
+				}
+
+				$encours = 0;
+				
+				if(!empty($TReport['monthly']['CA'][$year][$iMonth]['price'])) {
+					
+					$ca = $TReport['real']['CA']['price'];
+					$ca_mois = $TReport['monthly']['CA'][$year][$iMonth]['price'];
+					
+					$encours = $ca - $ca_mois;
+				}
+				$TValues[0]['values'][] = array(
+					'value'=>$encours_mois_m1
+					,'month'=>$month
+					,'encours'=>true
+				);
+
+				$TValues[1]['values'][] = array(
+					'value'=>$encours
+					,'month'=>$month
+					,'encours'=>true
+				);
+				
+				$encours_mois_m1 = -$encours;
+			}
+		}
+		
+		return $TValues ;
+		
+	}
+	
 	static function getBudget(&$PDOdb, $fk_project, $byMonth = false, $statut = 1) {
 		
 		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."sig_budget 
@@ -90,7 +134,16 @@ class TBudget extends TObjetStd {
 			$budget=new TBudget;
 			$budget->load($PDOdb, $row->rowid);
 			
-			if($byMonth)$TBudget[(int)date('m', $budget->date_debut)] = $budget;
+			if($byMonth) {
+				
+				if($byMonth == 'ym' ) {
+					$TBudget[(int)date('Y', $budget->date_debut)][(int)date('m', $budget->date_debut)] = $budget;
+				}
+				else{
+					$TBudget[(int)date('m', $budget->date_debut)] = $budget;	
+				}
+				
+			}
 			else $TBudget[] = $budget;
 		}
 		
