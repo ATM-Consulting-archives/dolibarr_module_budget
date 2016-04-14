@@ -44,7 +44,7 @@
 	</div>
 </div>
 
-<h2>Historique des budget du projet</h2>
+<h2>Historique des budgets du projet</h2>
 <table border="0" class="border" width="100%">
 			<tr budgets.style>
 				<td>[budgets.getNomUrl;strconv=no;block=tr]</td>
