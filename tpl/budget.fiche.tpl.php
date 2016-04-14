@@ -25,7 +25,7 @@
 		<td colspan="2">
 		
 		<table border="0" class="border" width="100%">
-			<tr>
+			<tr style="background-color: [line.color];">
 				<td>[line.code_compta;strconv=no;block=tr]</td>
 				<td>[line.label;strconv=no]</td>
 				<td>[line.amount;strconv=no]</td>

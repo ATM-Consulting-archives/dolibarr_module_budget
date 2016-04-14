@@ -180,11 +180,16 @@ function _get_lines(&$PDOdb,&$TForm,&$budget) {
 	
 	$Tab=array();
 	
+	$TColor=array(
+		'fff','f7fafc','eaf2f8','ddeaf4','d0e2ef','c4daeb','b7d3e7'
+	);
+	
 	foreach($TCode as $code_compta=>$label) {
 			$Tab[]=array(
 				'code_compta'=>$code_compta
 				,'label'=>$label
 				,'amount'=>$TForm->texte('', 'TBudgetLine['.$code_compta.'][amount]', $budget->getAmountForCode($code_compta) , 10,30)
+				,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
 			);
 		
 		
