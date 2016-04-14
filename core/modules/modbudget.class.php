@@ -239,7 +239,7 @@ class modbudget extends DolibarrModules
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy',			                // Put 0 if this is a top menu
 								'type'=>'left',			                // This is a Top menu entry
 								'titre'=>$langs->trans('ListBudget'),
-								'mainmenu'=>'budget',
+								'mainmenu'=>'accountancy',
 								'leftmenu'=>'budgetlist',
 								'url'=>'/budget/budget.php',
 								'langs'=>'budget@budget',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
@@ -250,10 +250,10 @@ class modbudget extends DolibarrModules
 								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
 
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=budget',
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=budgetlist',
 								'type'=>'left',			                // This is a Top menu entry
 								'titre'=>$langs->trans('CreerBudget'),
-								'mainmenu'=>'budget',
+								'mainmenu'=>'',
 								'leftmenu'=>'budgetlist',
 								'url'=>'/budget/budget.php?action=new',
 								'langs'=>'budget@budget',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
