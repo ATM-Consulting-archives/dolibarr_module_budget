@@ -65,32 +65,19 @@ class TBudget extends TObjetStd {
 				$this->amount_ca = $l->amount;
 			} else {
 				$classe_compta = (int) substr($l->code_compta,0,1);
-				switch($classe_compta) {
-					case 6:
-						$this->amount_depense += $l->amount;
-					break;
-					default:
-						
-					break;
-						
+				if ($classe_compta == 6) {
+					$this->amount_depense += $l->amount;
 				}
 			}
-			//var_dump($this->amount_depense);
 			$this->amount += $l->amount;
 		}
 		if($this->amount_ca != 0) {
-			// Calcul encours n
+			// Calcul taux encours
 			$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
 			$t_marge = $t_production - $this->amount_depense;
 			
 			$this->encours_taux = $this->amount_depense / $t_production;
-			
-			$this->amount_ca_virtuel = $this->amount_depense * $this->encours_taux;
-			
-			$this->amount_encours_n = $this->amount_ca_virtuel - $t_marge;
-			
-			$this->amount_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
-			$this->marge_globale = $this->amount_production - $this->amount_depense;
+			$this->marge_globale = $this->amount_ca - $this->amount_depense;
 		}
 	}
 	
