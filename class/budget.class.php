@@ -78,16 +78,20 @@ class TBudget extends TObjetStd {
 			//var_dump($this->amount_depense);
 			$this->amount += $l->amount;
 		}
-		// Calcul encours n
-		$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
-		$t_marge = $this->amount_ca - $this->amount_depense;
-		$this->encours_taux = $this->amount_depense / $t_production;
-		
-		$this->amount_encours_n = -($t_marge * $this->encours_taux);
-		
-		$this->amount_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
-		$this->marge_globale = $this->amount_production - $this->amount_depense;
-		
+		if($this->amount_ca != 0) {
+			// Calcul encours n
+			$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
+			$t_marge = $t_production - $this->amount_depense;
+			
+			$this->encours_taux = $this->amount_depense / $t_production;
+			
+			$this->amount_ca_virtuel = $this->amount_depense * $this->encours_taux;
+			
+			$this->amount_encours_n = $this->amount_ca_virtuel - $t_marge;
+			
+			$this->amount_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
+			$this->marge_globale = $this->amount_production - $this->amount_depense;
+		}
 	}
 	
 	function libStatut() {
