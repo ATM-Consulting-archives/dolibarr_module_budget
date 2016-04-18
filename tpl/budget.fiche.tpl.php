@@ -37,10 +37,6 @@
 		<td>[budget.amount_encours_n;strconv=no]</td>
 	</tr>
 	<tr style="background:#eaf9aa;">
-		<td> [langs.trans(TotalProduction);strconv=no] </td>
-		<td>[budget.amount_production;strconv=no]</td>
-	</tr>
-	<tr>
 		<td> [langs.trans(TotalDepense);strconv=no] </td>
 		<td>[budget.amount_depense;strconv=no]</td>
 	</tr>
