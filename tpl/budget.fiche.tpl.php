@@ -21,12 +21,12 @@
 		<td>[budget.date_fin;strconv=no]</td>
 	</tr>
 	<tr>
-		<td> [langs.trans(TotalProduction);strconv=no] </td>
-		<td>[budget.amount_production;strconv=no]</td>
-	</tr>
-	<tr>
 		<td> [langs.trans(TauxEncours);strconv=no] </td>
 		<td>[budget.encours_taux;strconv=no]</td>
+	</tr>
+	<tr style="background:#eaf979;">
+		<td> [langs.trans(CA);strconv=no] </td>
+		<td>[budget.amount_ca;strconv=no]</td>
 	</tr>
 	<tr>
 		<td> [langs.trans(Encoursn1);strconv=no] </td>
@@ -36,9 +36,17 @@
 		<td> [langs.trans(Encoursn);strconv=no] </td>
 		<td>[budget.amount_encours_n;strconv=no]</td>
 	</tr>
+	<tr style="background:#eaf9aa;">
+		<td> [langs.trans(TotalProduction);strconv=no] </td>
+		<td>[budget.amount_production;strconv=no]</td>
+	</tr>
 	<tr>
 		<td> [langs.trans(TotalDepense);strconv=no] </td>
 		<td>[budget.amount_depense;strconv=no]</td>
+	</tr>
+	<tr style="background:#eaf2f8;">
+		<td> [langs.trans(TotalMarge);strconv=no] </td>
+		<td>[budget.total_marge;strconv=no]</td>
 	</tr>
 	
 	<tr>

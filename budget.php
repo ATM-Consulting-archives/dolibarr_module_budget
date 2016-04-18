@@ -261,6 +261,13 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 				,'date_fin'=>$TForm->calendrier('','date_fin',$budget->date_fin)	
 				,'statut'=>$budget->TStatut[$budget->statut]
 				,'fk_project'=>$select_project
+				,'amount_ca'=>price($budget->amount_ca, 0, '',1, -1, 2)
+				,'amount_production'=>price($budget->amount_production, 0, '',1, -1, 2)
+				,'encours_taux'=>round($budget->encours_taux,4)*100
+				,'amount_encours_n'=>price($budget->amount_encours_n, 0, '',1, -1, 2)
+				,'amount_encours_n1'=>price($budget->amount_encours_n1, 0, '',1, -1, 2)
+				,'amount_depense'=>price($budget->amount_depense, 0, '',1, -1,2)
+				,'total_marge'=>price($budget->marge_globale, 0, '',1, -1,2)
 			)
 			,'langs'=>$langs
 		)

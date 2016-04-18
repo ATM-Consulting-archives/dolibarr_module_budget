@@ -64,8 +64,8 @@ class TBudget extends TObjetStd {
 			{
 				$this->amount_ca = $l->amount;
 			} else {
-				
-				switch((int) substr($l->code_compta,0,1)) {
+				$classe_compta = (int) substr($l->code_compta,0,1);
+				switch($classe_compta) {
 					case 6:
 						$this->amount_depense += $l->amount;
 					break;
@@ -75,14 +75,18 @@ class TBudget extends TObjetStd {
 						
 				}
 			}
-			var_dump($this->amount_depense);
+			//var_dump($this->amount_depense);
 			$this->amount += $l->amount;
 		}
+		// Calcul encours n
 		$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
 		$t_marge = $this->amount_ca - $this->amount_depense;
 		$this->encours_taux = $this->amount_depense / $t_production;
 		
+		$this->amount_encours_n = -($t_marge * $this->encours_taux);
+		
 		$this->amount_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
+		$this->marge_globale = $this->amount_production - $this->amount_depense;
 		
 	}
 	
