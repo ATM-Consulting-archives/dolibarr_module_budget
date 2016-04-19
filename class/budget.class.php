@@ -5,6 +5,14 @@
  */
 class TBudget extends TObjetStd {
 	
+	public $amount_ca;
+	public $amount_depense;
+	public $amount_production;
+	public $amount_encours_n;
+	public $amount_encours_n1;
+	public $encours_taux;
+	public $marge_globale;
+	
 	function __construct() {
 		global $langs;
 		
@@ -34,10 +42,43 @@ class TBudget extends TObjetStd {
 		
 		foreach($this->TBudgetLine as &$l) {
 			
-			$this->amount += $l->amount; 	
+			$this->amount += $l->amount;
 		}
 		
 		parent::save($PDOdb);
+	}
+	
+	function load(&$PDOdb, $rowid) {
+		parent::load($PDOdb, $rowid);
+		
+		$this->amount_ca = 0;
+		$this->amount_production = 0;
+		$this->amount_depense = 0;
+		$this->amount_encours_n = 0;
+		$this->amount_encours_n1 = 0;
+		$this->encours_taux = 0;
+		$this->mage_globale = 0;
+		
+		foreach($this->TBudgetLine as &$l) {
+			if($l->code_compta == 'chiffre_affaires')
+			{
+				$this->amount_ca = $l->amount;
+			} else {
+				$classe_compta = (int) substr($l->code_compta,0,1);
+				if ($classe_compta == 6) {
+					$this->amount_depense += $l->amount;
+				}
+			}
+			$this->amount += $l->amount;
+		}
+		if($this->amount_ca != 0) {
+			// Calcul taux encours
+			$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
+			$t_marge = $t_production - $this->amount_depense;
+			
+			$this->encours_taux = $this->amount_depense / $t_production;
+			$this->marge_globale = $this->amount_ca - $this->amount_depense;
+		}
 	}
 	
 	function libStatut() {
