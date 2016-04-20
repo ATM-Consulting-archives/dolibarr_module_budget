@@ -4,7 +4,15 @@
  * Class TBudget
  */
 class TBudget extends TObjetStd {
-	
+	public $date_debut;
+	public $date_fin;
+	public $fk_project;
+	public $statut;
+	public $TStatut;
+	public $user_valid;
+	public $user_reject;
+	public $label;
+	public $amount;
 	public $amount_ca;
 	public $amount_depense;
 	public $amount_production;
@@ -12,6 +20,7 @@ class TBudget extends TObjetStd {
 	public $amount_encours_n1;
 	public $encours_taux;
 	public $marge_globale;
+	public $TResultat;
 	
 	function __construct() {
 		global $langs;
@@ -76,28 +85,31 @@ class TBudget extends TObjetStd {
 			$this->marge_globale = $this->amount_ca - $this->amount_depense;
 		}
 	}
-	function loadWithCateg(&$PDOdb, $rowid) {
-		$this->load($PDOdb, $rowid);
+	
+	function fetch_resultat() {
 		$TCateg = TCategComptable::getStructureCodeComptable();
+		
 		$year = date('Y',$this->date_debut);
-		$month = date('m',$this->date_debut);
+		$month = (int) date('m',$this->date_debut);
+		
+		$this->TResultat['libelle'] = $this->label;
+		$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
+		
 		foreach($TCateg as $label=>$TCateg) {
-			$this->TResultat['category'][_get_key($label)]['libelle'] = $bigCateg;
-			$this->TResultat['category'][_get_key($label)]['code_budget'] = $code_compta;
-			$this->TResultat['category'][_get_key($label)][$year][$month]['price'] = $this->getAmountForCode($code_compta);
+			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
+			$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
+			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] = $this->getAmountForCode($code_compta);
 			if(!empty($TCateg['subcategory'])) {
 				foreach($TCateg['subcategory'] as $TSubCateg)
 				{
 					$code_compta = $TSubCateg['code_compta'];
-					$this->TResultat['category'][_get_key($label)]['libelle'] = $TSubCateg['label'];
-					$this->TResultat['category'][_get_key($label)]['code_budget'] = $code_compta;
-					$this->TResultat['category'][_get_key($label)][$year][$month]['subcategory'][_get_key($TSubCateg['libelle'])]['price'] = $this->getAmountForCode($code_compta);
-					$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
+					$price = $this->getAmountForCode($code_compta);
+					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
+					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
+					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($TSubCateg['libelle'])]['price'] = $price;
+					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] += $price;
 				}
 			}
-		}
-		foreach($TCateg as $code_compta => $categ) {
-			$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
 		}
 	}
 	
@@ -192,7 +204,7 @@ class TBudget extends TObjetStd {
 		
 	}
 	
-	static function getBudget(&$PDOdb, $fk_project, $byMonth = false, $statut = 1, $TBigCateg=array()) {
+	static function getBudget(&$PDOdb, $fk_project, $statut = 1) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
 		if(!is_array($fk_project))
@@ -204,23 +216,10 @@ class TBudget extends TObjetStd {
 		
 		$TBudget = array();
 		foreach($Tab as $row) {
-			
 			$budget=new TBudget;
-			$budget->loadWithCateg($PDOdb, $row->rowid);
-			if($byMonth) {
-				$year = (int)date('Y', $budget->date_debut);
-				$month = (int)date('m', $budget->date_debut);
-				if($byMonth == 'ym' ) {
-					foreach($budget->TResultat as $code_compta=>$TValues)
-					{
-						$TBudget[$year][$month][$code_compta]['price'] += $TValues['price'];
-					}
-				}
-				else{
-					$TBudget[$month] = $budget;
-				}
-			}
-			else $TBudget[] = $budget;
+			$budget->load($PDOdb, $row->rowid);
+			$budget->fetch_resultat();
+			$TBudget[] = $budget->TResultat;
 		}
 		return $TBudget;
 	}
