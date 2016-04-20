@@ -9,10 +9,6 @@
 		<td>[insurance.fk_project;strconv=no]</td>
 	</tr>
 	<tr>
-		<td> [langs.trans(Status);strconv=no] </td>
-		<td>[insurance.statut;strconv=no]</td>
-	</tr>
-	<tr>
 		<td> [langs.trans(DateStart);strconv=no] </td>
 		<td>[insurance.date_debut;strconv=no]</td>
 	</tr>
@@ -28,11 +24,11 @@
 			<tr style="background-color: [line.color];">
 				<td>[line.code_compta;strconv=no;block=tr]</td>
 				<td>[line.label;strconv=no]</td>
-				<td>[line.amount;strconv=no]</td>
+				<td>[line.percentage;strconv=no]</td>
 			</tr>
 			
 		</table>
-			
+		
 		</td>
 	</tr>
 	
@@ -43,7 +39,7 @@
 	[buttons.val;block=div;strconv=no]
 	</div>
 </div>
-
+<!--
 <h2>Historique des budgets du projet</h2>
 <table border="0" class="border" width="100%">
 			<tr budgets.style>
@@ -55,3 +51,4 @@
 			</tr>
 			
 </table>
+-->
