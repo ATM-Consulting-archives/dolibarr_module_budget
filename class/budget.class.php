@@ -80,6 +80,28 @@ class TBudget extends TObjetStd {
 			$this->marge_globale = $this->amount_ca - $this->amount_depense;
 		}
 	}
+	function loadWithCateg(&$PDOdb, $rowid, $TBigCateg) {
+		$this->load($PDOdb, $rowid);
+		$TCateg = TCategComptable::getAllCodeComptable();
+		$year = date('Y',$this->date_debut);
+		$month = date('m',$this->date_debut);
+		/*foreach($TBigCateg as $bigCateg) {
+			$code_compta = array_search($bigCateg, $TCateg);
+			if(!empty($code_compta)) {
+				$this->TResultat['category'][_get_key($bigCateg)]['libelle'] = $bigCateg;
+				$this->TResultat['category'][_get_key($bigCateg)]['code_budget'] = $code_compta;
+				$this->TResultat['category'][_get_key($bigCateg)]['@bymonth'][$year][$month]['price'] = $this->getAmountForCode($code_compta);
+			}
+		}
+		foreach($this->TResultat['category'] as $category)
+		{
+			
+		}*/
+		foreach($TCateg as $code_compta => $categ) {
+			$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
+		}
+		pre($this->TResultat,1);
+	}
 	
 	function libStatut() {
 		
@@ -97,7 +119,7 @@ class TBudget extends TObjetStd {
 		
 		foreach($this->TBudgetLine as &$l) {
 			if($l->code_compta == $code_compta) {
-				return $l->amount;			
+				return $l->amount;
 			}
 		}
 		
@@ -143,10 +165,10 @@ class TBudget extends TObjetStd {
 
 				$encours = 0;
 				
-				if(!empty($TReport['monthly']['CA'][$year][$iMonth]['price'])) {
+				if(!empty($TReport['category']['CA']['@bymonth'][$year][$iMonth]['price'])) {
 					
-					$ca = $TReport['real']['CA']['price'];
-					$ca_mois = $TReport['monthly']['CA'][$year][$iMonth]['price'];
+					$ca = $TReport['category']['CA']['@global']['price'];
+					$ca_mois = $TReport['category']['CA']['@bymonth'][$year][$iMonth]['price'];
 					
 					$encours = $ca - $ca_mois;
 				}
@@ -172,30 +194,33 @@ class TBudget extends TObjetStd {
 		
 	}
 	
-	static function getBudget(&$PDOdb, $fk_project, $byMonth = false, $statut = 1) {
-		
-		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."sig_budget 
-		WHERE fk_project=".$fk_project." AND statut IN (".$statut.") ORDER BY date_debut ");
+	static function getBudget(&$PDOdb, $fk_project, $byMonth = false, $statut = 1, $TBigCateg=array()) {
+		$sql = "SELECT rowid";
+		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
+		if(!is_array($fk_project))
+			$sql.=" WHERE fk_project=".$fk_project;
+		else
+			$sql.=" WHERE fk_project IN (".implode(',', $fk_project).")";
+		$sql.=" AND statut IN (".$statut.") ORDER BY date_debut ";
+		$Tab = $PDOdb->ExecuteAsArray($sql);
 		
 		$TBudget = array();
 		foreach($Tab as $row) {
 			
 			$budget=new TBudget;
-			$budget->load($PDOdb, $row->rowid);
+			$budget->loadWithCateg($PDOdb, $row->rowid, $TBigCateg);
 			
 			if($byMonth) {
 				
 				if($byMonth == 'ym' ) {
-					$TBudget[(int)date('Y', $budget->date_debut)][(int)date('m', $budget->date_debut)] = $budget;
+					$TBudget[(int)date('Y', $budget->date_debut)][(int)date('m', $budget->date_debut)] = $budget->TResultat;
 				}
 				else{
-					$TBudget[(int)date('m', $budget->date_debut)] = $budget;	
+					$TBudget[(int)date('m', $budget->date_debut)] = $budget;
 				}
-				
 			}
 			else $TBudget[] = $budget;
 		}
-		
 		return $TBudget;
 	}
 	
