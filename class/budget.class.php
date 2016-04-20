@@ -94,6 +94,8 @@ class TBudget extends TObjetStd {
 		
 		$this->TResultat['libelle'] = $this->label;
 		$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
+		$this->TResultat['year'] = date('Y',$this->date_debut);
+		$this->TResultat['month'] = (int) date('m',$this->date_debut);
 		
 		foreach($TCateg as $label=>$TCateg) {
 			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
