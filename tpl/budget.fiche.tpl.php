@@ -22,7 +22,7 @@
 	</tr>
 	<tr>
 		<td> [langs.trans(TauxEncours);strconv=no] </td>
-		<td>[budget.encours_taux;strconv=no]</td>
+		<td>[budget.encours_taux;strconv=no] %</td>
 	</tr>
 	<tr style="background:#eaf979;">
 		<td> [langs.trans(CA);strconv=no] </td>
