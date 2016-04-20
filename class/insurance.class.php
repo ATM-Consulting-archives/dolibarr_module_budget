@@ -70,10 +70,10 @@ class TInsurance extends TObjetStd {
 		
 	}
 
-	function setAmountForCode($code_compta,$amount) {
+	function setAmountForCode($code_compta,$percentage) {
 		foreach($this->TInsuranceLines as $k=> &$l) {
 			if($l->code_compta == $code_compta) {
-				$l->percentage = $amount;	
+				$l->percentage = $percentage;	
 				return $k;		
 			}
 		}
@@ -82,7 +82,7 @@ class TInsurance extends TObjetStd {
 		$k = $this->addChild($PDOdb, 'TInsuranceLines');
 		
 		$this->TInsuranceLines[$k]->code_compta = $code_compta;
-		$this->TInsuranceLines[$k]->percentage = $amount;
+		$this->TInsuranceLines[$k]->percentage = $percentage;
 		
 		return $k;
 	}
