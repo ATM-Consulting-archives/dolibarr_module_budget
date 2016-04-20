@@ -49,6 +49,13 @@ function _action(&$PDOdb) {
 			setEventMessage('Budget refusé');
 			_fiche($PDOdb, $budget);
 			break;
+		case 'delete':
+			$id=(int)GETPOST('id');
+			$budget->load($PDOdb, $id);
+			$budget->delete($PDOdb);
+			setEventMessage('Budget supprimé');
+			header('Location:?action=list');
+			break;
 		case 'reopen':
 			$id=(int)GETPOST('id');
 			$budget->load($PDOdb, $id);
@@ -87,10 +94,8 @@ function _action(&$PDOdb) {
 			}
 			
 			$budget->save($PDOdb);
-			
 			setEventMessage('Sauvegardé avec succès');
-			
-			_fiche($PDOdb, $budget);
+			header('Location:?action=view&id='.$budget->getId());
 			
 			break;
 		default :
@@ -175,24 +180,33 @@ function _get_project_link($fk_project) {
 }
 
 function _get_lines(&$PDOdb,&$TForm,&$budget) {
-	
-	$TCode = TCategComptable::getAllCodeComptable();
+	global $langs;
+	$TBigCateg = TCategComptable::getStructureCodeComptable();
 	
 	$Tab=array();
 	
 	$TColor=array(
-		'fff','f7fafc','eaf2f8','ddeaf4','d0e2ef','c4daeb','b7d3e7'
+		'','b7d3e7','ddeaf4','f7fafc','fff'
 	);
-	
-	foreach($TCode as $code_compta=>$label) {
-			$Tab[]=array(
-				'code_compta'=>$code_compta
-				,'label'=>$label
-				,'amount'=>$TForm->texte('', 'TBudgetLine['.$code_compta.'][amount]', $budget->getAmountForCode($code_compta) , 10,30)
-				,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
-			);
-		
-		
+	foreach($TBigCateg as $label=>$TCateg) {
+		$Tab[]=array(
+			'code_compta'=>$label
+			,'label'=>$TCateg['libelle']
+			,'amount'=>''
+			,'color'=>'#c4daeb'
+		);
+		if(!empty($TCateg['subcategory']))
+		{
+			foreach($TCateg['subcategory'] as $TSubCateg) {
+				$code_compta = $TSubCateg['code_compta'];
+				$Tab[]=array(
+					'code_compta'=>$code_compta
+					,'label'=>$TSubCateg['label']
+					,'amount'=>$TForm->texte('', 'TBudgetLine['.$code_compta.'][amount]', $budget->getAmountForCode($code_compta) , 10,30)
+					,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
+				);
+			}
+		}
 	}
 	
 	return $Tab;
@@ -225,8 +239,9 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	if($mode == 'view') {
 		$TButton[] = '<a class="butAction" href="?action=list">'.$langs->trans('Liste').'</a>';
 	
-		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$budget->getId().'">'.$langs->trans('Valider').'</a>';
+		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$budget->getId().'">'.$langs->trans('Valid').'</a>';
 		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$budget->getId().'">'.$langs->trans('Refuser').'</a>';
+		if($budget->statut == 0)$TButton[] = '<a class="butAction" onclick="return confirm(\'Êtes vous certain ?\')" href="?action=delete&id='.$budget->getId().'">'.$langs->trans('Delete').'</a>';
 		
 		if($budget->statut > 0)$TButton[] = '<a class="butAction" href="?action=reopen&id='.$budget->getId().'">'.$langs->trans('Reopen').'</a>';
 		else $TButton[]='<a class="butAction" href="?action=edit&id='.$budget->getId().'">'.$langs->trans('Modify').'</a>';
