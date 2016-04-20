@@ -5,7 +5,11 @@
  */
 class TInsurance extends TObjetStd {
 		
-	public $pourcentage;
+	public $percentage;
+	public $date_debut;
+	public $date_fin;
+	public $fk_project;
+	public $label;
 	
 	
 	
