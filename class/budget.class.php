@@ -100,7 +100,6 @@ class TBudget extends TObjetStd {
 		foreach($TCateg as $code_compta => $categ) {
 			$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
 		}
-		pre($this->TResultat,1);
 	}
 	
 	function libStatut() {
@@ -209,14 +208,17 @@ class TBudget extends TObjetStd {
 			
 			$budget=new TBudget;
 			$budget->loadWithCateg($PDOdb, $row->rowid, $TBigCateg);
-			
 			if($byMonth) {
-				
+				$year = (int)date('Y', $budget->date_debut);
+				$month = (int)date('m', $budget->date_debut);
 				if($byMonth == 'ym' ) {
-					$TBudget[(int)date('Y', $budget->date_debut)][(int)date('m', $budget->date_debut)] = $budget->TResultat;
+					foreach($budget->TResultat as $code_compta=>$TValues)
+					{
+						$TBudget[$year][$month][$code_compta]['price'] += $TValues['price'];
+					}
 				}
 				else{
-					$TBudget[(int)date('m', $budget->date_debut)] = $budget;
+					$TBudget[$month] = $budget;
 				}
 			}
 			else $TBudget[] = $budget;
