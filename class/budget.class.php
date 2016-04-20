@@ -21,7 +21,6 @@ class TBudget extends TObjetStd {
 		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
 		parent::add_champs('statut,user_valid,user_reject',array('type'=>'integer'));
 		parent::add_champs('amount',array('type'=>'float'));
-		
 		parent::_init_vars('label');
         parent::start();
 
@@ -60,14 +59,11 @@ class TBudget extends TObjetStd {
 		$this->mage_globale = 0;
 		
 		foreach($this->TBudgetLine as &$l) {
-			if($l->code_compta == 'chiffre_affaires')
-			{
-				$this->amount_ca = $l->amount;
-			} else {
-				$classe_compta = (int) substr($l->code_compta,0,1);
-				if ($classe_compta == 6) {
-					$this->amount_depense += $l->amount;
-				}
+			$classe_compta = (int) substr($l->code_compta,0,1);
+			if ($classe_compta == 6) {
+				$this->amount_depense += $l->amount;
+			}else if($classe_compta == 7) {
+				$this->amount_ca += $l->amount;
 			}
 			$this->amount += $l->amount;
 		}
@@ -80,23 +76,26 @@ class TBudget extends TObjetStd {
 			$this->marge_globale = $this->amount_ca - $this->amount_depense;
 		}
 	}
-	function loadWithCateg(&$PDOdb, $rowid, $TBigCateg) {
+	function loadWithCateg(&$PDOdb, $rowid) {
 		$this->load($PDOdb, $rowid);
-		$TCateg = TCategComptable::getAllCodeComptable();
+		$TCateg = TCategComptable::getStructureCodeComptable();
 		$year = date('Y',$this->date_debut);
 		$month = date('m',$this->date_debut);
-		/*foreach($TBigCateg as $bigCateg) {
-			$code_compta = array_search($bigCateg, $TCateg);
-			if(!empty($code_compta)) {
-				$this->TResultat['category'][_get_key($bigCateg)]['libelle'] = $bigCateg;
-				$this->TResultat['category'][_get_key($bigCateg)]['code_budget'] = $code_compta;
-				$this->TResultat['category'][_get_key($bigCateg)]['@bymonth'][$year][$month]['price'] = $this->getAmountForCode($code_compta);
+		foreach($TCateg as $label=>$TCateg) {
+			$this->TResultat['category'][_get_key($label)]['libelle'] = $bigCateg;
+			$this->TResultat['category'][_get_key($label)]['code_budget'] = $code_compta;
+			$this->TResultat['category'][_get_key($label)][$year][$month]['price'] = $this->getAmountForCode($code_compta);
+			if(!empty($TCateg['subcategory'])) {
+				foreach($TCateg['subcategory'] as $TSubCateg)
+				{
+					$code_compta = $TSubCateg['code_compta'];
+					$this->TResultat['category'][_get_key($label)]['libelle'] = $TSubCateg['label'];
+					$this->TResultat['category'][_get_key($label)]['code_budget'] = $code_compta;
+					$this->TResultat['category'][_get_key($label)][$year][$month]['subcategory'][_get_key($TSubCateg['libelle'])]['price'] = $this->getAmountForCode($code_compta);
+					$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
+				}
 			}
 		}
-		foreach($this->TResultat['category'] as $category)
-		{
-			
-		}*/
 		foreach($TCateg as $code_compta => $categ) {
 			$this->TResultat[$code_compta]['price'] = $this->getAmountForCode($code_compta);
 		}
@@ -207,7 +206,7 @@ class TBudget extends TObjetStd {
 		foreach($Tab as $row) {
 			
 			$budget=new TBudget;
-			$budget->loadWithCateg($PDOdb, $row->rowid, $TBigCateg);
+			$budget->loadWithCateg($PDOdb, $row->rowid);
 			if($byMonth) {
 				$year = (int)date('Y', $budget->date_debut);
 				$month = (int)date('m', $budget->date_debut);
