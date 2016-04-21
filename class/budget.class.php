@@ -21,6 +21,7 @@ class TBudget extends TObjetStd {
 	public $encours_taux;
 	public $marge_globale;
 	public $TResultat;
+	public $TBudgetLine;
 	
 	function __construct() {
 		global $langs;
@@ -41,6 +42,17 @@ class TBudget extends TObjetStd {
 			/*,2=>'En attente de validation'*/
 			,3=>'Refusé'
 		);
+		
+		$this->amount_ca 			= 0;
+		$this->amount_production 	= 0;
+		$this->amount_depense 		= 0;
+		$this->amount_encours_n 	= 0;
+		$this->amount_encours_n1 	= 0;
+		$this->encours_taux 		= 0;
+		$this->mage_globale 		= 0;
+		
+		$this->$TResultat 			= array();
+		$this->$TBudgetLine 		= array();
 
 	}
 	
@@ -58,14 +70,6 @@ class TBudget extends TObjetStd {
 	
 	function load(&$PDOdb, $rowid) {
 		parent::load($PDOdb, $rowid);
-		
-		$this->amount_ca = 0;
-		$this->amount_production = 0;
-		$this->amount_depense = 0;
-		$this->amount_encours_n = 0;
-		$this->amount_encours_n1 = 0;
-		$this->encours_taux = 0;
-		$this->mage_globale = 0;
 		
 		foreach($this->TBudgetLine as &$l) {
 			$classe_compta = (int) substr($l->code_compta,0,1);
