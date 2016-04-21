@@ -21,6 +21,7 @@ class TBudget extends TObjetStd {
 	public $encours_taux;
 	public $marge_globale;
 	public $TResultat;
+	public $TBudgetLine;
 	
 	function __construct() {
 		global $langs;
@@ -41,6 +42,17 @@ class TBudget extends TObjetStd {
 			/*,2=>'En attente de validation'*/
 			,3=>'Refusé'
 		);
+		
+		$this->amount_ca 			= 0;
+		$this->amount_production 	= 0;
+		$this->amount_depense 		= 0;
+		$this->amount_encours_n 	= 0;
+		$this->amount_encours_n1 	= 0;
+		$this->encours_taux 		= 0;
+		$this->mage_globale 		= 0;
+		
+		$this->TResultat 			= array();
+		$this->TBudgetLine 		= array();
 
 	}
 	
@@ -58,14 +70,6 @@ class TBudget extends TObjetStd {
 	
 	function load(&$PDOdb, $rowid) {
 		parent::load($PDOdb, $rowid);
-		
-		$this->amount_ca = 0;
-		$this->amount_production = 0;
-		$this->amount_depense = 0;
-		$this->amount_encours_n = 0;
-		$this->amount_encours_n1 = 0;
-		$this->encours_taux = 0;
-		$this->mage_globale = 0;
 		
 		foreach($this->TBudgetLine as &$l) {
 			$classe_compta = (int) substr($l->code_compta,0,1);
@@ -87,7 +91,7 @@ class TBudget extends TObjetStd {
 	}
 	
 	function fetch_resultat() {
-		$TCateg = TCategComptable::getStructureCodeComptable();
+		$TAllCateg = TCategComptable::getStructureCodeComptable();
 		
 		$year = date('Y',$this->date_debut);
 		$month = (int) date('m',$this->date_debut);
@@ -96,8 +100,9 @@ class TBudget extends TObjetStd {
 		$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
 		$this->TResultat['year'] = date('Y',$this->date_debut);
 		$this->TResultat['month'] = (int) date('m',$this->date_debut);
+		$this->TResultat['tx_encours'] = $this->encours_taux;
 		
-		foreach($TCateg as $label=>$TCateg) {
+		foreach($TAllCateg as $label=>$TCateg) {
 			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
 			$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
 			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] = $this->getAmountForCode($code_compta);
@@ -152,58 +157,6 @@ class TBudget extends TObjetStd {
 		$this->TBudgetLine[$k]->amount = $amount;
 		
 		return $k;
-	}
-	
-	static function getEncours(&$TReport, &$TDate, &$TBudget) {
-		$ca_mois=0;
-		
-		$TValues=array();
-		$TValues[1] = $TValues[0] = array('total'=>' - ','values'=>array());
-		
-		$encours_mois_m1 = 0;
-		
-		foreach($TDate as $year => $TMonth) {
-			foreach ($TMonth as $iMonth => $month) {
-				
-				if(!empty($TBudget[$year][$iMonth])) {
-						$TValues[0]['values'][] =$TValues[1]['values'][] = array(
-											 	'value'=>' - '
-											 	,'year'=>$year
-											 	,'month'=>$iMonth
-											 	,'budget'=>true
-											 	 ,'class'=>'budget'
-											);
-				}
-
-				$encours = 0;
-				
-				if(!empty($TReport['category']['CA']['@bymonth'][$year][$iMonth]['price'])) {
-					
-					$ca = $TReport['category']['CA']['@global']['price'];
-					$ca_mois = $TReport['category']['CA']['@bymonth'][$year][$iMonth]['price'];
-					
-					$encours = $ca - $ca_mois;
-				}
-				$TValues[0]['values'][] = array(
-					'value'=>$encours_mois_m1
-					,'month'=>$month
-					,'encours'=>true
-					 ,'class'=>'month'
-				);
-
-				$TValues[1]['values'][] = array(
-					'value'=>$encours
-					,'month'=>$month
-					,'encours'=>true
-					 ,'class'=>'month'
-				);
-				
-				$encours_mois_m1 = -$encours;
-			}
-		}
-		
-		return $TValues ;
-		
 	}
 	
 	static function getBudget(&$PDOdb, $fk_project, $statut = 1) {
