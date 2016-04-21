@@ -91,7 +91,7 @@ class TBudget extends TObjetStd {
 	}
 	
 	function fetch_resultat() {
-		$TCateg = TCategComptable::getStructureCodeComptable();
+		$TAllCateg = TCategComptable::getStructureCodeComptable();
 		
 		$year = date('Y',$this->date_debut);
 		$month = (int) date('m',$this->date_debut);
@@ -101,7 +101,7 @@ class TBudget extends TObjetStd {
 		$this->TResultat['year'] = date('Y',$this->date_debut);
 		$this->TResultat['month'] = (int) date('m',$this->date_debut);
 		
-		foreach($TCateg as $label=>$TCateg) {
+		foreach($TAllCateg as $label=>$TCateg) {
 			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
 			$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
 			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] = $this->getAmountForCode($code_compta);

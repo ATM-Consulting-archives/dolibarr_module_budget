@@ -28,7 +28,7 @@ class TInsurance extends TObjetStd {
 	}
 	
 	
-	static function getInsurance(&$PDOdb, $fk_project) {
+	static function getInsurance(&$PDOdb, $fk_project, $date_deb, $date_fin) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_insurance";
 		if(!is_array($fk_project))
@@ -38,63 +38,52 @@ class TInsurance extends TObjetStd {
 		$sql.=" ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
 		
-		$TInsurance = array();
+		$TInsurance = $TPercents = array();
 		foreach($Tab as $row) {
 			$insurance=new TInsurance;
 			$insurance->load($PDOdb, $row->rowid);
-			$insurance->fetch_resultat();
+			$insurance->fetch_resultat($date_deb, $date_fin);
+			if(!empty($insurance->TResultat['allpercent']))
+				$TPercents = array_merge($TPercents,$insurance->TResultat['allpercent']);
 			$TInsurance[] = $insurance->TResultat;
 		}
+		$TInsurance['allpercent'] = $TPercents;
 		//pre($TInsurance,true);
 		return $TInsurance;
 	}
 	
 	
-	function fetch_resultat() {
+	function fetch_resultat($date_deb, $date_fin) {
 		
 		
-		$TDates=getTDatesByDates($this->date_debut, $this->date_fin);
-		
-		
-		$TCateg = TCategComptable::getStructureCodeComptable();
-		$year = date('Y',$this->date_debut);
-		$month = (int) date('m',$this->date_debut);
-		//var_dump($month, $year);
-		
+		$TDates=getTDatesByDates($date_deb, $date_fin);
+		$TAllCateg = TCategComptable::getStructureCodeComptable();
+
+		$this->TResultat['libelle'] = $this->label;
+		$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
+		$this->TResultat['year'] = date('Y',$this->date_debut);
+		$this->TResultat['month'] = (int) date('m',$this->date_debut);
 		
 		foreach ($TDates as $year=>$TMonth) {
 			foreach($TMonth as $iMonth=>$month) {
-				
-				
-				$date_deb = $month['t_deb'];
-				$date_fin = $month['t_fin'];
-				//$this->TResultat[$y][_get_key($label)]['libelle'] = $label;
-				
-				$y=$year;
-				$m=date('m',$month['t_deb']);
-				//$this->TResultat[$y] = $y;
-				$this->TResultat['libelle'] = $this->label;
-				$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
-				$this->TResultat['year'] = date('Y',$this->date_debut);
-				$this->TResultat['month'] = (int) date('m',$this->date_debut);
-				foreach($TCateg as $label=>$TCateg) {
-					//$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
-					//$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
-					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['percentage'] = $this->getAmountForCode($code_compta);
+				foreach($TAllCateg as $label=>$TCateg) {
 					if(!empty($TCateg['subcategory'])) {
 						foreach($TCateg['subcategory'] as $TSubCateg)
 						{
 							$code_compta = $TSubCateg['code_compta'];
 							$percentage = $this->getAmountForCode($code_compta);
-							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
-							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
-							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
-							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['percentage'] += $percentage;
+							if($percentage > 0) {
+								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
+								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
+								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
+								$this->TResultat['allpercent'][$percentage] = $percentage;
+							}
 						}
 					}
 				}
 			}
-		}//pre($this->TResultat,true);
+		}
+		//pre($this->TResultat,true);
 	}
 
 
