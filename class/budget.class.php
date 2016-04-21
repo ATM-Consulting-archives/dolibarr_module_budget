@@ -51,8 +51,8 @@ class TBudget extends TObjetStd {
 		$this->encours_taux 		= 0;
 		$this->mage_globale 		= 0;
 		
-		$this->$TResultat 			= array();
-		$this->$TBudgetLine 		= array();
+		$this->TResultat 			= array();
+		$this->TBudgetLine 		= array();
 
 	}
 	
