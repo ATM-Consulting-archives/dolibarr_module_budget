@@ -10,6 +10,7 @@ class TInsurance extends TObjetStd {
 	public $date_fin;
 	public $fk_project;
 	public $label;
+	public $TResultat;
 	
 	
 	
@@ -37,28 +38,71 @@ class TInsurance extends TObjetStd {
 		$sql.=" ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
 		
-		$TBudget = array();
+		$TInsurance = array();
 		foreach($Tab as $row) {
-			
-			$insurance=new TInsurance();
-			$insurance->label; //loader l'objet insurance
-			if($byMonth) {
-				$year = (int)date('Y', $budget->date_debut);
-				$month = (int)date('m', $budget->date_debut);
-				if($byMonth == 'ym' ) {
-					foreach($budget->TResultat as $code_compta=>$TValues)
-					{
-						$TBudget[$year][$month][$code_compta]['price'] += $TValues['price'];
+			$insurance=new TInsurance;
+			$insurance->load($PDOdb, $row->rowid);
+			$insurance->fetch_resultat();
+			$TInsurance[] = $insurance->TResultat;
+		}
+		//pre($TInsurance,true);
+		return $TInsurance;
+	}
+	
+	
+	function fetch_resultat() {
+		
+		
+		$TDates=getTDatesByDates($this->date_debut, $this->date_fin);
+		
+		
+		$TCateg = TCategComptable::getStructureCodeComptable();
+		$year = date('Y',$this->date_debut);
+		$month = (int) date('m',$this->date_debut);
+		//var_dump($month, $year);
+		
+		
+		foreach ($TDates as $year=>$TMonth) {
+			foreach($TMonth as $iMonth=>$month) {
+				
+				
+				$date_deb = $month['t_deb'];
+				$date_fin = $month['t_fin'];
+				//$this->TResultat[$y][_get_key($label)]['libelle'] = $label;
+				
+				$y=$year;
+				$m=date('m',$month['t_deb']);
+				//$this->TResultat[$y] = $y;
+				$this->TResultat['libelle'] = $this->label;
+				$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
+				$this->TResultat['year'] = date('Y',$this->date_debut);
+				$this->TResultat['month'] = (int) date('m',$this->date_debut);
+				foreach($TCateg as $label=>$TCateg) {
+					//$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
+					//$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
+					$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['percentage'] = $this->getAmountForCode($code_compta);
+					if(!empty($TCateg['subcategory'])) {
+						foreach($TCateg['subcategory'] as $TSubCateg)
+						{
+							$code_compta = $TSubCateg['code_compta'];
+							$percentage = $this->getAmountForCode($code_compta);
+							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
+							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
+							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
+							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['percentage'] += $percentage;
+						}
 					}
 				}
-				else{
-					$TBudget[$month] = $budget;
-				}
 			}
-			else $TBudget[] = $budget;
-		}
-		return $TBudget;
+		}pre($this->TResultat,true);
 	}
+
+
+	function regroup_taux_insurance(){
+		
+		
+	}
+	
 	
 	function getAmountForCode($code_compta) {
 		
