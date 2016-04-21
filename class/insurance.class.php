@@ -80,21 +80,21 @@ class TInsurance extends TObjetStd {
 				foreach($TCateg as $label=>$TCateg) {
 					//$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
 					//$this->TResultat['category'][_get_key($label)]['code_budget'] = $TCateg['code'];
-					$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['percentage'] = $this->getAmountForCode($code_compta);
+					$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['percentage'] = $this->getAmountForCode($code_compta);
 					if(!empty($TCateg['subcategory'])) {
 						foreach($TCateg['subcategory'] as $TSubCateg)
 						{
 							$code_compta = $TSubCateg['code_compta'];
 							$percentage = $this->getAmountForCode($code_compta);
-							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
-							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
-							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
-							$this->TResultat['@bymonth'][$year][$iMonth]['category'][_get_key($label)]['percentage'] += $percentage;
+							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
+							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
+							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
+							$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['percentage'] += $percentage;
 						}
 					}
 				}
 			}
-		}//pre($this->TResultat,true);
+		}pre($this->TResultat,true);
 	}
 
 
