@@ -94,7 +94,7 @@ class TInsurance extends TObjetStd {
 					}
 				}
 			}
-		}pre($this->TResultat,true);
+		}//pre($this->TResultat,true);
 	}
 
 
