@@ -8,7 +8,6 @@ class TInsurance extends TObjetStd {
 	public $percentage;
 	public $date_debut;
 	public $date_fin;
-	public $fk_project;
 	public $label;
 	public $TResultat;
 	
@@ -18,7 +17,6 @@ class TInsurance extends TObjetStd {
 		
 		parent::set_table(MAIN_DB_PREFIX.'sig_insurance');
 		parent::add_champs('date_debut, date_fin',array('type'=>'date', 'index'=>true));
-		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
 		parent::add_champs('percentage',array('type'=>'float'));
 		
 		parent::_init_vars('label');
@@ -28,13 +26,9 @@ class TInsurance extends TObjetStd {
 	}
 	
 	
-	static function getInsurance(&$PDOdb, $fk_project, $date_deb, $date_fin) {
+	static function getInsurance(&$PDOdb, $date_deb, $date_fin) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_insurance";
-		if(!is_array($fk_project))
-			$sql.=" WHERE fk_project=".$fk_project;
-		else
-			$sql.=" WHERE fk_project IN (".implode(',', $fk_project).")";
 		$sql.=" ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
 		
