@@ -10,6 +10,8 @@ class TInsurance extends TObjetStd {
 	public $date_fin;
 	public $label;
 	public $TResultat;
+	public $statut;
+	public $TStatut;
 	
 	
 	
@@ -18,17 +20,25 @@ class TInsurance extends TObjetStd {
 		parent::set_table(MAIN_DB_PREFIX.'sig_insurance');
 		parent::add_champs('date_debut, date_fin',array('type'=>'date', 'index'=>true));
 		parent::add_champs('percentage',array('type'=>'float'));
-		
+		parent::add_champs('statut', array('type'=>'integer'));
 		parent::_init_vars('label');
 		parent::start();
 		
 		$this->setChild('TInsuranceLines','fk_insurance');
+		
+		$this->TStatut = array(
+			0=>'Brouillon'
+			,1=>'Validé'
+			/*,2=>'En attente de validation'*/
+			,3=>'Refusé'
+		);
 	}
 	
 	
-	static function getInsurance(&$PDOdb, $date_deb, $date_fin) {
+	static function getInsurance(&$PDOdb, $date_deb, $date_fin, $statut) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_insurance";
+		$sql.=" WHERE statut IN (".$statut.")";
 		$sql.=" ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
 		
@@ -70,7 +80,6 @@ class TInsurance extends TObjetStd {
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;
-								$this->TResultat['allpercent'][$percentage] = $percentage;
 							}
 						}
 					}
@@ -80,9 +89,9 @@ class TInsurance extends TObjetStd {
 		//pre($this->TResultat,true);
 	}
 
-
-	function regroup_taux_insurance(){
+	function libStatut() {
 		
+		return $this->TStatut[$this->statut];
 		
 	}
 	
