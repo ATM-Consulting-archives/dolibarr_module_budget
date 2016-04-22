@@ -52,7 +52,7 @@ class TBudget extends TObjetStd {
 		$this->mage_globale 		= 0;
 		
 		$this->TResultat 			= array();
-		$this->TBudgetLine 		= array();
+		$this->TBudgetLine 			= array();
 
 	}
 	
