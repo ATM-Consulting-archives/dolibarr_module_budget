@@ -29,36 +29,28 @@ function _action(&$PDOdb) {
 	
 	switch($action) {
 		
-		/*case 'valid':
+		case 'valid':
 			$id=(int)GETPOST('id');
-			$budget->load($PDOdb, $id);
-			$budget->statut = 1;
-			$budget->user_valid = $user->id;
+			$insurance->load($PDOdb, $id);
+			$insurance->statut = 1;
+			$insurance->user_valid = $user->id;
 			
-			$budget->save($PDOdb);
+			$insurance->save($PDOdb);
 			
-			setEventMessage('Budget validé');
-			_fiche($PDOdb, $budget);
+			setEventMessage('Assurance validé');
+			_fiche($PDOdb, $insurance);
 			
 			
 			break;
 		case 'reject':
 			$id=(int)GETPOST('id');
-			$budget->load($PDOdb, $id);
-			$budget->statut = 3;
-			$budget->user_reject = $user->id;
-			$budget->save($PDOdb);
-			setEventMessage('Budget refusé');
-			_fiche($PDOdb, $budget);
+			$insurance->load($PDOdb, $id);
+			$insurance->statut = 3;
+			$insurance->user_reject = $user->id;
+			$insurance->save($PDOdb);
+			setEventMessage('Assurance refusé');
+			_fiche($PDOdb, $insurance);
 			break;
-		case 'reopen':
-			$id=(int)GETPOST('id');
-			$budget->load($PDOdb, $id);
-			$budget->statut = 0;
-			$budget->save($PDOdb);
-			
-			_fiche($PDOdb, $budget);
-			break;*/
 		case 'new':
 		
 			_fiche($PDOdb, $insurance, 'edit');
@@ -129,9 +121,10 @@ function _fiche(&$PDOdb, &$insurance, $mode='view')
 	if($mode == 'view') {
 		$TButton[] = '<a class="butAction" href="?action=list">'.$langs->trans('Liste').'</a>';
 	
-		//$TButton[] = '<a class="butAction" href="?action=valid&id='.$insurance->getId().'">'.$langs->trans('Valider').'</a>';
-		//$TButton[] = '<a class="butAction" href="?action=reject&id='.$insurance->getId().'">'.$langs->trans('Refuser').'</a>';
-		$TButton[] = '<a class="butAction" onclick="return confirm(\'Êtes vous certain ?\')" href="?action=delete&id='.$insurance->getId().'">'.$langs->trans('Delete').'</a>';
+		if($insurance->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$insurance->getId().'">'.$langs->trans('Valider').'</a>';
+		if($insurance->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$insurance->getId().'">'.$langs->trans('Refuser').'</a>';
+		if($insurance->statut == 0)$TButton[] = '<a class="butAction" onclick="return confirm(\'Êtes vous certain ?\')" href="?action=delete&id='.$insurance->getId().'">'.$langs->trans('Delete').'</a>';
+		
 		$TButton[]='<a class="butAction" href="?action=edit&id='.$insurance->getId().'">'.$langs->trans('Modify').'</a>';
 		
 
@@ -155,7 +148,8 @@ function _fiche(&$PDOdb, &$insurance, $mode='view')
 			'insurance'=>array(
 				'label'=>$TForm->texte('','label',$insurance->label, 80,255)
 				,'date_debut'=>$TForm->calendrier('','date_debut',$insurance->date_debut)
-				,'date_fin'=>$TForm->calendrier('','date_fin',$insurance->date_fin)	
+				,'date_fin'=>$TForm->calendrier('','date_fin',$insurance->date_fin)
+				, 'statut'=>$insurance->Tstatut[$insurance->statut]
 			)
 			,'langs'=>$langs
 		)
@@ -178,13 +172,13 @@ function _list(&$PDOdb)
 	
 	$r = new TListviewTBS('listI');
 	
-	$sql = 'SELECT rowid,label,date_debut,date_fin,percentage';
+	$sql = 'SELECT rowid,label,date_debut,date_fin, statut';
 	$sql.=' FROM '.MAIN_DB_PREFIX.'sig_insurance ins';
 	
 	$titre = $langs->trans('list').' '.$langs->trans('insurance');
 	$THide = array('rowid');
 		
-	$budget = new TInsurance;
+	$insurance = new TInsurance;
 		
 	echo $r->render($PDOdb, $sql, array(
 		'limit'=>array(
@@ -195,6 +189,7 @@ function _list(&$PDOdb)
 			
 		)
 		,'translate'=>array(
+			'statut'=>$insurance->TStatut
 		)
 		,'hide'=>$THide
 		,'liste'=>array(
