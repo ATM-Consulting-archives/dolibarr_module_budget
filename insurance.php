@@ -129,28 +129,21 @@ function _fiche(&$PDOdb, &$insurance, $mode='view')
 	if($mode == 'view') {
 		$TButton[] = '<a class="butAction" href="?action=list">'.$langs->trans('Liste').'</a>';
 	
-		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$insurance->getId().'">'.$langs->trans('Valider').'</a>';
-		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$insurance->getId().'">'.$langs->trans('Refuser').'</a>';
+		//$TButton[] = '<a class="butAction" href="?action=valid&id='.$insurance->getId().'">'.$langs->trans('Valider').'</a>';
+		//$TButton[] = '<a class="butAction" href="?action=reject&id='.$insurance->getId().'">'.$langs->trans('Refuser').'</a>';
+		$TButton[] = '<a class="butAction" onclick="return confirm(\'Êtes vous certain ?\')" href="?action=delete&id='.$insurance->getId().'">'.$langs->trans('Delete').'</a>';
+		$TButton[]='<a class="butAction" href="?action=edit&id='.$insurance->getId().'">'.$langs->trans('Modify').'</a>';
 		
-		if($budget->statut > 0)$TButton[] = '<a class="butAction" href="?action=reopen&id='.$insurance->getId().'">'.$langs->trans('Reopen').'</a>';
-		else $TButton[]='<a class="butAction" href="?action=edit&id='.$insurance->getId().'">'.$langs->trans('Modify').'</a>';
-		
-		$select_project = _get_project_link($insurance->fk_project);
+
 	}
 	else{
 		$TButton[]='<a class="butActionDelete" href="?action=view&id='.$insurance->getId().'">'.$langs->trans('Cancel').'</a>';
 		
 		$TButton[]=$TForm->btsubmit($langs->trans('Valid'), 'bt_submit');
-		
-		
-		ob_start();
-		$formProject->select_projects(-1,$insurance->fk_project, 'fk_project');
-		$select_project =ob_get_clean();
 	}
 
 	$TLine = _get_lines($PDOdb,$TForm, $insurance);
 
-	//$TInsurance = TBudget::getInsurance($PDOdb, $insurance->fk_project,false, '0,1,3');
 	
 	echo $TBS->render('tpl/insurance.fiche.tpl.php',
 		array(
@@ -163,7 +156,6 @@ function _fiche(&$PDOdb, &$insurance, $mode='view')
 				'label'=>$TForm->texte('','label',$insurance->label, 80,255)
 				,'date_debut'=>$TForm->calendrier('','date_debut',$insurance->date_debut)
 				,'date_fin'=>$TForm->calendrier('','date_fin',$insurance->date_fin)	
-				,'fk_project'=>$select_project
 			)
 			,'langs'=>$langs
 		)
@@ -186,7 +178,7 @@ function _list(&$PDOdb)
 	
 	$r = new TListviewTBS('listI');
 	
-	$sql = 'SELECT rowid,label,date_debut,date_fin,fk_project,percentage';
+	$sql = 'SELECT rowid,label,date_debut,date_fin,percentage';
 	$sql.=' FROM '.MAIN_DB_PREFIX.'sig_insurance ins';
 	
 	$titre = $langs->trans('list').' '.$langs->trans('insurance');
@@ -218,10 +210,6 @@ function _list(&$PDOdb)
 			,'date_debut'=>$langs->trans('DateStart')
 			,'date_fin'=>$langs->trans('DateEnd')
 			,'label'=>$langs->trans('Label')
-		)
-		
-		,'eval'=>array(
-			'fk_project'=>'_get_project_link(@val@)'
 		)
 		,'type'=>array(
 			'date_debut'=>'date'
@@ -270,21 +258,5 @@ function _get_lines(&$PDOdb,&$TForm,&$insurance) {
 	
 	return $Tab;
 }
-
-
-
-function _get_project_link($fk_project) {
-	global $db,$conf,$langs,$user;
-	
-	dol_include_once('/projet/class/project.class.php');
-	
-	$projet=new Project($db);
-	if($projet->fetch($fk_project)>0) {
-		return $projet->getNomUrl(1);
-	}
-	else{
-		return 'N/A';
-	}
 	
 	
-}

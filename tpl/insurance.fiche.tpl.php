@@ -3,11 +3,7 @@
 	<tr>
 		<td> [langs.trans(Label);strconv=no] </td>
 		<td>[insurance.label;strconv=no]</td>
-	</tr>
-	<tr>
-		<td> [langs.trans(Project);strconv=no] </td>
-		<td>[insurance.fk_project;strconv=no]</td>
-	</tr>
+	</tr> 
 	<tr>
 		<td> [langs.trans(DateStart);strconv=no] </td>
 		<td>[insurance.date_debut;strconv=no]</td>
