@@ -13,10 +13,6 @@
 		<td>[budget.statut;strconv=no]</td>
 	</tr>
 	<tr>
-		<td> [langs.trans(Actif);strconv=no] </td>
-		<td>[budget.actif;strconv=no]</td>
-	</tr>
-	<tr>
 		<td> [langs.trans(DateStart);strconv=no] </td>
 		<td>[budget.date_debut;strconv=no]</td>
 	</tr>

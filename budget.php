@@ -121,7 +121,7 @@ function _list(&$PDOdb)
 	
 	$r = new TListviewTBS('listB');
 	
-	$sql = 'SELECT rowid,label,date_debut,date_fin,fk_project,statut,actif';
+	$sql = 'SELECT rowid,label,date_debut,date_fin,fk_project,statut';
 	$sql.=' FROM '.MAIN_DB_PREFIX.'sig_budget b';
 	
 	$titre = $langs->trans('list').' '.$langs->trans('budgets');
