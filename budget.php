@@ -20,7 +20,7 @@ $PDOdb=new TPDOdb;
 _action($PDOdb);
 
 function _action(&$PDOdb) {
-	global $user, $conf;
+	global $user, $conf,$langs;
 	
 	$budget = new TBudget;
 	$action = GETPOST('action');
@@ -37,8 +37,17 @@ function _action(&$PDOdb) {
 			
 			setEventMessage('Budget validé');
 			_fiche($PDOdb, $budget);
+			break;
+		case 'revu':
+			$id=(int)GETPOST('id');
+			$budget->load($PDOdb, $id);
+			$budget->statut = 4;
+			$budget->user_valid = $user->id;
 			
+			$budget->save($PDOdb);
 			
+			setEventMessage('Budget '.$langs->trans('revu'));
+			_fiche($PDOdb, $budget);
 			break;
 		case 'reject':
 			$id=(int)GETPOST('id');
@@ -175,8 +184,6 @@ function _get_project_link($fk_project) {
 	else{
 		return 'N/A';
 	}
-	
-	
 }
 
 function _get_lines(&$PDOdb,&$TForm,&$budget) {
@@ -226,10 +233,10 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	
 	dol_include_once('/core/class/html.formprojet.class.php');
 	$formProject = new FormProjets($db);
+	$form = new Form($db);
 	
 	$TForm=new TFormCore('auto','form_edit_budget','POST');
 	$TForm->Set_typeaff($mode);
-	
 	echo $TForm->hidden('id', $budget->getId());
 	
 	echo $TForm->hidden('action', 'save');
@@ -238,6 +245,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 
 	if($mode == 'view') {
 		$TButton[] = '<a class="butAction" href="?action=list">'.$langs->trans('Liste').'</a>';
+		if($budget->statut != 4)$TButton[] = '<a class="butAction" href="?action=revu&id='.$budget->getId().'">'.$langs->trans('Disable').'</a>';
 	
 		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$budget->getId().'">'.$langs->trans('Valid').'</a>';
 		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$budget->getId().'">'.$langs->trans('Refuser').'</a>';
@@ -262,7 +270,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	$TLine = _get_lines($PDOdb,$TForm, $budget);
 
 	$TBudget = TBudget::getBudget($PDOdb, $budget->fk_project,false, '0,1,3');
-	
+		
 	echo $TBS->render('tpl/budget.fiche.tpl.php',
 		array(
 			'line'=>$TLine

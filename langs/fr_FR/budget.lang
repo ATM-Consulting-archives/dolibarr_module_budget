@@ -5,3 +5,8 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 
 budgetSetup = Configuration du module budget
 budgetAbout = A propos du module budget
+
+actif = actif
+Actif = Actif
+revu = revu (inactif)
+Revu = Revu (inactif)

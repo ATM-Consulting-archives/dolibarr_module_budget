@@ -12,6 +12,7 @@ class TBudget extends TObjetStd {
 	public $user_valid;
 	public $user_reject;
 	public $label;
+	public $inactif;
 	public $amount;
 	public $amount_ca;
 	public $amount_depense;
@@ -37,10 +38,11 @@ class TBudget extends TObjetStd {
 		$this->setChild('TBudgetLine','fk_budget');
 
 		$this->TStatut = array(
-			0=>'Brouillon'
-			,1=>'Validé'
+			0=>$langs->trans('Draft')
+			,1=>$langs->trans('Validé')
 			/*,2=>'En attente de validation'*/
-			,3=>'Refusé'
+			,3=>$langs->trans('Refusé')
+			,4=>$langs->trans('Revu')
 		);
 		
 		$this->amount_ca 			= 0;
@@ -101,6 +103,7 @@ class TBudget extends TObjetStd {
 		$this->TResultat['year'] = date('Y',$this->date_debut);
 		$this->TResultat['month'] = (int) date('m',$this->date_debut);
 		$this->TResultat['tx_encours'] = $this->encours_taux;
+		$this->TResultat['statut'] = $this->statut;
 		
 		foreach($TAllCateg as $label=>$TCateg) {
 			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
