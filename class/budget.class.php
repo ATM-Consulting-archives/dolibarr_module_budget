@@ -30,7 +30,6 @@ class TBudget extends TObjetStd {
         parent::set_table(MAIN_DB_PREFIX.'sig_budget');
 		parent::add_champs('date_debut, date_fin',array('type'=>'date', 'index'=>true));
 		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
-		parent::add_champs('actif',array('type'=>'integer', 'default'=>1, 'index'=>true));
 		parent::add_champs('statut,user_valid,user_reject',array('type'=>'integer'));
 		parent::add_champs('amount',array('type'=>'float'));
 		parent::_init_vars('label');
@@ -39,10 +38,11 @@ class TBudget extends TObjetStd {
 		$this->setChild('TBudgetLine','fk_budget');
 
 		$this->TStatut = array(
-			0=>'Brouillon'
-			,1=>'Validé'
+			0=>$langs->trans('Draft')
+			,1=>$langs->trans('Validé')
 			/*,2=>'En attente de validation'*/
-			,3=>'Refusé'
+			,3=>$langs->trans('Refusé')
+			,4=>$langs->trans('Revu')
 		);
 		
 		$this->amount_ca 			= 0;
@@ -103,7 +103,7 @@ class TBudget extends TObjetStd {
 		$this->TResultat['year'] = date('Y',$this->date_debut);
 		$this->TResultat['month'] = (int) date('m',$this->date_debut);
 		$this->TResultat['tx_encours'] = $this->encours_taux;
-		$this->TResultat['actif'] = $this->actif;
+		$this->TResultat['statut'] = $this->statut;
 		
 		foreach($TAllCateg as $label=>$TCateg) {
 			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
