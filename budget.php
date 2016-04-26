@@ -154,12 +154,10 @@ function _list(&$PDOdb)
 			,'date_debut'=>$langs->trans('DateStart')
 			,'date_fin'=>$langs->trans('DateEnd')
 			,'label'=>$langs->trans('Label')
-			,'actif'=>$langs->trans('Actif')
 		)
 		
 		,'eval'=>array(
 			'fk_project'=>'_get_project_link(@val@)'
-			,'actif'=>'_get_actif(@val@)'
 		)
 		,'type'=>array(
 			'date_debut'=>'date'
@@ -186,14 +184,6 @@ function _get_project_link($fk_project) {
 	else{
 		return 'N/A';
 	}
-}
-
-function _get_actif($actif) {
-	global $langs;
-	if($actif)
-		return $langs->trans('Actif');
-	else 
-		return $langs->trans('Revu');
 }
 
 function _get_lines(&$PDOdb,&$TForm,&$budget) {
@@ -280,12 +270,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 	$TLine = _get_lines($PDOdb,$TForm, $budget);
 
 	$TBudget = TBudget::getBudget($PDOdb, $budget->fk_project,false, '0,1,3');
-	
-	if($mode!='view')
-		$selectActif = $form->selectyesno('actif',$budget->actif,1);
-	else
-		($budget->actif)?$selectActif=$langs->trans('Actif'):$selectActif=$langs->trans('Revu');
-	
+		
 	echo $TBS->render('tpl/budget.fiche.tpl.php',
 		array(
 			'line'=>$TLine
@@ -298,7 +283,6 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 				,'date_debut'=>$TForm->calendrier('','date_debut',$budget->date_debut)
 				,'date_fin'=>$TForm->calendrier('','date_fin',$budget->date_fin)	
 				,'statut'=>$budget->TStatut[$budget->statut]
-				,'actif'=>$selectActif
 				,'fk_project'=>$select_project
 				,'amount_ca'=>price($budget->amount_ca, 0, '',1, -1, 2)
 				,'amount_production'=>price($budget->amount_production, 0, '',1, -1, 2)
