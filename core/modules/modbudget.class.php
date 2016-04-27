@@ -252,7 +252,7 @@ class modbudget extends DolibarrModules
 
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=budgetlist',
 								'type'=>'left',			                // This is a Top menu entry
-								'titre'=>$langs->trans('CreerBudget'),
+								'titre'=>$langs->trans('CreateBudget'),
 								'mainmenu'=>'',
 								'leftmenu'=>'budgetlist',
 								'url'=>'/budget/budget.php?action=new',
