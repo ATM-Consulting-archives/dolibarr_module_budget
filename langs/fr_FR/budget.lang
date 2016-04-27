@@ -10,3 +10,11 @@ actif = actif
 Actif = Actif
 revu = revu (inactif)
 Revu = Revu (inactif)
+
+Reopen = Réouvrir
+
+ListBudget = Liste des budgets
+CreateBudget = Créer un budget
+
+ListInsurance = Liste des assurances
+CreateInsurance = Créer une assurance
