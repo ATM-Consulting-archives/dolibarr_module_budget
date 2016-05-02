@@ -8,7 +8,7 @@ dol_include_once('/sig/class/categorie_comptable.class.php');
 if(empty($conf->sig->enabled)) exit('SIGrequire');
 
 // Contrôle d'accès
-if (!($user->admin || $user->rights->budget->read)) {
+if (!($user->admin || $user->rights->budget->read) || empty($user->rights->budget->encours->edit)) {
     accessforbidden();
 }
 
@@ -23,10 +23,9 @@ function _action(&$PDOdb) {
 	global $user, $conf,$langs;
 	
 	$encours = new TEncours;
-	$action = GETPOST('action');
+	$put = GETPOST('put');
 	
-	switch($action) {
-		
+	switch($put) {
 		case 'update_encours':
 			$identifiant=GETPOST('identifiant');
 			$type_object = GETPOST('type_object');
