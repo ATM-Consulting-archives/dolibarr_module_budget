@@ -60,15 +60,14 @@ class TInsurance extends TObjetStd {
 	function fetch_resultat($date_deb, $date_fin) {
 		
 		
-		$TDates=getTDatesByDates($date_deb, $date_fin);
-		$TAllCateg = TCategComptable::getStructureCodeComptable();
-
-		$this->TResultat['libelle'] = $this->label;
-		$this->TResultat['date'] = date('d/m/Y',$this->date_debut);
-		$this->TResultat['year'] = date('Y',$this->date_debut);
-		$this->TResultat['month'] = (int) date('m',$this->date_debut);
+		$TDate						= getTDateByDates($date_deb, $date_fin);
+		$TAllCateg 					= TCategComptable::getStructureCodeComptable();
+		$this->TResultat['libelle']	= $this->label;
+		$this->TResultat['date'] 	= date('d/m/Y',$this->date_debut);
+		$this->TResultat['year'] 	= date('Y',$this->date_debut);
+		$this->TResultat['month'] 	= (int) date('m',$this->date_debut);
 		
-		foreach ($TDates as $year=>$TMonth) {
+		foreach ($TDate as $year=>$TMonth) {
 			foreach($TMonth as $iMonth=>$month) {
 				foreach($TAllCateg as $label=>$TCateg) {
 					if(!empty($TCateg['subcategory'])) {
