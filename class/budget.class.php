@@ -174,14 +174,16 @@ class TBudget extends TObjetStd {
 		} else {
 			// Cas sans projet avec dates
 			if(!empty($datetime_debut)) {
-				$sql.=" WHERE date_deb>=\'".date('Ymd',$datetime_debut).'\'';
-				if(empty($datetime_fin))
-				$sql.=" AND date_deb<=\'".date('Ymd',$datetime_fin).'\'';
+				$sql.=" WHERE date_debut>='".date('Ymd',$datetime_debut).'\'';
+				if(!empty($datetime_fin))
+					$sql.=" AND date_debut<='".date('Ymd',$datetime_fin).'\'';
+				// Cas budget global
+				$sql.=" AND fk_project = 0";
 			}
 		}
 		$sql.=" AND statut IN (".$statut.") ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
-		
+				
 		$TBudget = array();
 		foreach($Tab as $row) {
 			$budget=new TBudget;
