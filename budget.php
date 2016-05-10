@@ -121,7 +121,7 @@ function _list(&$PDOdb)
 	
 	$r = new TListviewTBS('listB');
 	
-	$sql = 'SELECT rowid,label,date_debut,date_fin,fk_project,statut';
+	$sql = 'SELECT rowid,label,date_debut,fk_project,statut';
 	$sql.=' FROM '.MAIN_DB_PREFIX.'sig_budget b';
 	
 	$titre = $langs->trans('list').' '.$langs->trans('budgets');
@@ -152,7 +152,6 @@ function _list(&$PDOdb)
 		,'title'=>array(
 			'rowid'=>'ID'
 			,'date_debut'=>$langs->trans('DateStart')
-			,'date_fin'=>$langs->trans('DateEnd')
 			,'label'=>$langs->trans('Label')
 		)
 		
@@ -161,7 +160,6 @@ function _list(&$PDOdb)
 		)
 		,'type'=>array(
 			'date_debut'=>'date'
-			,'date_fin'=>'date'
 		)
 		,'orderBy'=>array(
 			'date_debut'=>'DESC'
@@ -182,7 +180,7 @@ function _get_project_link($fk_project) {
 		return $projet->getNomUrl(1);
 	}
 	else{
-		return 'N/A';
+		return 'Global';
 	}
 }
 
@@ -193,7 +191,10 @@ function _get_lines(&$PDOdb,&$TForm,&$budget) {
 	$Tab=array();
 	
 	$TColor=array(
-		'','b7d3e7','ddeaf4','f7fafc','fff'
+		'c4daeb','b7d3e7','ddeaf4','f7fafc','fff'
+	);
+	$TClass=array(
+		'level0','level1','level2','level3','level4'
 	);
 	foreach($TBigCateg as $label=>$TCateg) {
 		$Tab[]=array(
@@ -201,6 +202,7 @@ function _get_lines(&$PDOdb,&$TForm,&$budget) {
 			,'label'=>$TCateg['libelle']
 			,'amount'=>''
 			,'color'=>'#c4daeb'
+			,'class'=>'level0'
 		);
 		if(!empty($TCateg['subcategory']))
 		{
@@ -211,6 +213,7 @@ function _get_lines(&$PDOdb,&$TForm,&$budget) {
 					,'label'=>$TSubCateg['label']
 					,'amount'=>$TForm->texte('', 'TBudgetLine['.$code_compta.'][amount]', $budget->getAmountForCode($code_compta) , 10,30)
 					,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
+					,'class'=>(!empty($TClass[strlen($code_compta)]) ? $TClass[strlen($code_compta)] : 'level4')
 				);
 			}
 		}
@@ -281,7 +284,6 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 			'budget'=>array(
 				'label'=>$TForm->texte('','label',$budget->label, 80,255)
 				,'date_debut'=>$TForm->calendrier('','date_debut',$budget->date_debut)
-				,'date_fin'=>$TForm->calendrier('','date_fin',$budget->date_fin)	
 				,'statut'=>$budget->TStatut[$budget->statut]
 				,'fk_project'=>$select_project
 				,'amount_ca'=>price($budget->amount_ca, 0, '',1, -1, 2)
@@ -293,6 +295,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 				,'total_marge'=>price($budget->marge_globale, 0, '',1, -1,2)
 			)
 			,'langs'=>$langs
+			,'mode'=>$mode
 		)
 	);
 	

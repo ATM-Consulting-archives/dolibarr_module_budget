@@ -98,7 +98,7 @@ function _fiche(&$PDOdb, &$insurance, $mode='view')
 {
 	global $langs, $conf,$db;
 	
-	llxHeader('',$langs->trans('Budget'));
+	llxHeader('',$langs->trans('Insurance'));
 	
 	$doli_form = new Form($db);
 	$TBS=new TTemplateTBS();

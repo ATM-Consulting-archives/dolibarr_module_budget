@@ -1,3 +1,22 @@
+<script type="text/javascript">
+function HandSValues(start=false) {
+	var time = 500;
+	if(start) time = 0;
+	$('#rows').toggle(time);
+}
+	$(document).ready(function(){
+		var mode = '[mode;strconv=no]';
+		if(mode == 'view') {
+			HandSValues(true)
+		}else{
+			$('#handsvalues').toggle();
+		}
+		$('#handsvalues a').on('click',function(){
+			HandSValues();
+			return false;
+		});
+	});
+</script>
 <table class="border" width="100%">
 	
 	<tr>
@@ -17,24 +36,12 @@
 		<td>[budget.date_debut;strconv=no]</td>
 	</tr>
 	<tr>
-		<td> [langs.trans(DateEnd);strconv=no] </td>
-		<td>[budget.date_fin;strconv=no]</td>
-	</tr>
-	<tr>
 		<td> [langs.trans(TauxEncours);strconv=no] </td>
 		<td>[budget.encours_taux;strconv=no] %</td>
 	</tr>
 	<tr style="background:#eaf979;">
 		<td> [langs.trans(CA);strconv=no] </td>
 		<td>[budget.amount_ca;strconv=no]</td>
-	</tr>
-	<tr>
-		<td> [langs.trans(Encoursn1);strconv=no] </td>
-		<td>[budget.amount_encours_n1;strconv=no]</td>
-	</tr>
-	<tr>
-		<td> [langs.trans(Encoursn);strconv=no] </td>
-		<td>[budget.amount_encours_n;strconv=no]</td>
 	</tr>
 	<tr style="background:#eaf9aa;">
 		<td> [langs.trans(TotalDepense);strconv=no] </td>
@@ -45,11 +52,15 @@
 		<td>[budget.total_marge;strconv=no]</td>
 	</tr>
 	
-	<tr>
+	<tr id="handsvalues">
+		<td colspan="2" align="center">
+			<a href="" class="butAction" style="min-width:50%;">[langs.trans(Voir/Cacher le détail)]</a>
+		</td>
+	</tr>
+	<tr id="rows">
 		<td colspan="2">
-		
 		<table border="0" class="border" width="100%">
-			<tr style="background-color: [line.color];">
+			<tr class="[line.class]" style="background-color: [line.color];">
 				<td>[line.code_compta;strconv=no;block=tr]</td>
 				<td>[line.label;strconv=no]</td>
 				<td>[line.amount;strconv=no]</td>

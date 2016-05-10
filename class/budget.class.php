@@ -5,7 +5,6 @@
  */
 class TBudget extends TObjetStd {
 	public $date_debut;
-	public $date_fin;
 	public $fk_project;
 	public $statut;
 	public $TStatut;
@@ -28,7 +27,7 @@ class TBudget extends TObjetStd {
 		global $langs;
 		
         parent::set_table(MAIN_DB_PREFIX.'sig_budget');
-		parent::add_champs('date_debut, date_fin',array('type'=>'date', 'index'=>true));
+		parent::add_champs('date_debut',array('type'=>'date', 'index'=>true));
 		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
 		parent::add_champs('statut,user_valid,user_reject',array('type'=>'integer'));
 		parent::add_champs('amount',array('type'=>'float'));
