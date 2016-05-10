@@ -11,6 +11,8 @@ Actif = Actif
 revu = revu (inactif)
 Revu = Revu (inactif)
 
+ShowDifferenceBetweenBudgectAndReal=Voir le résultat différentiel entre le Budget et le Réel
+
 Reopen = Réouvrir
 
 ListBudget = Liste des budgets

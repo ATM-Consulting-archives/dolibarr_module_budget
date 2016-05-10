@@ -148,8 +148,8 @@ class TBudget extends TObjetStd {
 	function setAmountForCode($code_compta,$amount) {
 		foreach($this->TBudgetLine as $k=> &$l) {
 			if($l->code_compta == $code_compta) {
-				$l->amount = $amount;	
-				return $k;		
+				$l->amount = $amount;
+				return $k;
 			}
 		}
 		
@@ -162,16 +162,28 @@ class TBudget extends TObjetStd {
 		return $k;
 	}
 	
-	static function getBudget(&$PDOdb, $fk_project, $statut = 1) {
+	static function getBudget(&$PDOdb, $fk_project=null, $statut = 1, $datetime_debut=null, $datetime_fin=null) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
-		if(!is_array($fk_project))
-			$sql.=" WHERE fk_project=".$fk_project;
-		else
-			$sql.=" WHERE fk_project IN (".implode(',', $fk_project).")";
+		if(!empty($fk_project)){
+			// Cas avec projet
+			if(!is_array($fk_project))
+				$sql.=" WHERE fk_project=".$fk_project;
+			else
+				$sql.=" WHERE fk_project IN (".implode(',', $fk_project).")";
+		} else {
+			// Cas sans projet avec dates
+			if(!empty($datetime_debut)) {
+				$sql.=" WHERE date_debut>='".date('Ymd',$datetime_debut).'\'';
+				if(!empty($datetime_fin))
+					$sql.=" AND date_debut<='".date('Ymd',$datetime_fin).'\'';
+				// Cas budget global
+				$sql.=" AND fk_project = 0";
+			}
+		}
 		$sql.=" AND statut IN (".$statut.") ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
-		
+				
 		$TBudget = array();
 		foreach($Tab as $row) {
 			$budget=new TBudget;
