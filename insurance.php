@@ -78,7 +78,7 @@ function _action(&$PDOdb) {
 			//var_dump($id, $insurance);
 			
 			foreach ($_REQUEST['TInsuranceLines'] as $code_compta => $data) {
-				$insurance->setAmountForCode($code_compta, $data['percentage']);
+				$insurance->setAmountForCode(''.$code_compta, $data['percentage']);
 			}
 			
 			$insurance->save($PDOdb);
@@ -231,22 +231,24 @@ function _get_lines(&$PDOdb,&$TForm,&$insurance) {
 		'','b7d3e7','ddeaf4','f7fafc','fff'
 	);
 	foreach($TBigCateg as $label=>$TCateg) {
-		$Tab[]=array(
-			'code_compta'=>$label
-			,'label'=>$TCateg['libelle']
-			,'percentage'=>''
-			,'color'=>'#c4daeb'
-		);
-		if(!empty($TCateg['subcategory']))
-		{
-			foreach($TCateg['subcategory'] as $TSubCateg) {
-				$code_compta = $TSubCateg['code_compta'];
-				$Tab[]=array(
-					'code_compta'=>$code_compta
-					,'label'=>$TSubCateg['label']
-					,'percentage'=>$TForm->texte('', 'TInsuranceLines['.$code_compta.'][percentage]', $insurance->getAmountForCode($code_compta) , 10,30)
-					,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
-				);
+		if($label == 'CA') {
+			$Tab[]=array(
+				'code_compta'=>$label
+				,'label'=>$TCateg['libelle']
+				,'percentage'=>''
+				,'color'=>'#c4daeb'
+			);
+			if(!empty($TCateg['subcategory']))
+			{
+				foreach($TCateg['subcategory'] as $TSubCateg) {
+					$code_compta = $TSubCateg['code_compta'];
+					$Tab[]=array(
+						'code_compta'=>$code_compta
+						,'label'=>$TSubCateg['label']
+						,'percentage'=>$TForm->texte('', 'TInsuranceLines['.$code_compta.'][percentage]', $insurance->getAmountForCode($code_compta) , 10,30)
+						,'color'=>(!empty($TColor[strlen($code_compta)]) ? '#'.$TColor[strlen($code_compta)] : '#fff')
+					);
+				}
 			}
 		}
 	}

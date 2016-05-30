@@ -27,10 +27,11 @@ class TBudget extends TObjetStd {
 		global $langs;
 		
         parent::set_table(MAIN_DB_PREFIX.'sig_budget');
-		parent::add_champs('date_debut',array('type'=>'date', 'index'=>true));
+		parent::add_champs('date_debut,date_fin',array('type'=>'date', 'index'=>true));
 		parent::add_champs('fk_project',array('type'=>'integer', 'index'=>true));
+		parent::add_champs('code_analytique',array('type'=>'varchar', 'index'=>true));
 		parent::add_champs('statut,user_valid,user_reject',array('type'=>'integer'));
-		parent::add_champs('amount',array('type'=>'float'));
+		parent::add_champs('amount,encours_n1',array('type'=>'float'));
 		parent::_init_vars('label');
         parent::start();
 
@@ -137,7 +138,7 @@ class TBudget extends TObjetStd {
 	function getAmountForCode($code_compta) {
 		
 		foreach($this->TBudgetLine as &$l) {
-			if($l->code_compta == $code_compta) {
+			if($l->code_compta == $code_compta && strlen($l->code_compta) == strlen($code_compta)) {
 				return $l->amount;
 			}
 		}
@@ -146,7 +147,7 @@ class TBudget extends TObjetStd {
 
 	function setAmountForCode($code_compta,$amount) {
 		foreach($this->TBudgetLine as $k=> &$l) {
-			if($l->code_compta == $code_compta) {
+			if($l->code_compta == $code_compta && strlen($l->code_compta) == strlen($code_compta)) {
 				$l->amount = $amount;
 				return $k;
 			}
@@ -160,11 +161,32 @@ class TBudget extends TObjetStd {
 		
 		return $k;
 	}
+
+	function revoir(&$PDOdb) {
+		$budget = new TBudget;
+		$budget = clone $this;
+		$budget->statut = 0;
+		$budget->label .= ' (copie)';
+		$budget->rowid = null;
+		$budget->date_cre = time();
+		foreach($budget->TBudgetLine as &$l) {
+			$ligne = new TBudgetLine;
+			$ligne = clone $l;
+			$ligne->rowid = null;
+			$ligne->fk_budget=null;
+			$l = $ligne;
+		}
+		$budget->save($PDOdb);
+		return $budget;
+	}
 	
-	static function getBudget(&$PDOdb, $fk_project=null, $statut = 1, $datetime_debut=null, $datetime_fin=null) {
+	static function getBudget(&$PDOdb, $code_analytique= null,$fk_project=null, $statut = 1, $datetime_debut=null, $datetime_fin=null) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
-		if(!empty($fk_project)){
+		if(!empty($code_analytique)) {
+			// Cas code analytique
+				$sql.=" WHERE code_analytique='".$code_analytique."'";
+		} else if(!empty($fk_project)) {
 			// Cas avec projet
 			if(!is_array($fk_project))
 				$sql.=" WHERE fk_project=".$fk_project;
