@@ -180,6 +180,16 @@ class TBudget extends TObjetStd {
 		return $budget;
 	}
 	
+	static function getTypeBudget($statut) {
+		$TypeStatus = array(
+			1=>'valide',
+			//2=>'valid',
+			3=>'refuse',
+			4=>'revu'
+		);
+		return $TypeStatus[$statut];
+	}
+	
 	static function getBudget(&$PDOdb, $code_analytique= null,$fk_project=null, $statut = 1, $datetime_debut=null, $datetime_fin=null) {
 		$sql = "SELECT rowid";
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
