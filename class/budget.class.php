@@ -195,7 +195,20 @@ class TBudget extends TObjetStd {
 		$sql.=" FROM ".MAIN_DB_PREFIX."sig_budget";
 		if(!empty($code_analytique)) {
 			// Cas code analytique
+			if(!is_array($code_analytique)) {
 				$sql.=" WHERE code_analytique='".$code_analytique."'";
+			} else {
+				$isfirst=true;
+				$sql.=" WHERE 1 AND(";
+				foreach($code_analytique as $one_groupe) {
+					if(!$isfirst) {
+						$sql.=" OR ";
+					}
+					$sql.="code_analytique LIKE '".$one_groupe."%'";
+					$isfirst=false;
+				}
+				$sql.=")";
+			}
 		} else if(!empty($fk_project)) {
 			// Cas avec projet
 			if(!is_array($fk_project))
@@ -212,9 +225,10 @@ class TBudget extends TObjetStd {
 				$sql.=" AND fk_project = 0";
 			}
 		}
+		
 		$sql.=" AND statut IN (".$statut.") ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
-				
+		
 		$TBudget = array();
 		foreach($Tab as $row) {
 			$budget=new TBudget;
