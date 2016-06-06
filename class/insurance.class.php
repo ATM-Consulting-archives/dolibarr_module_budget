@@ -63,9 +63,12 @@ class TInsurance extends TObjetStd {
 		$TDate						= getTDateByDates($date_deb, $date_fin);
 		$TAllCateg 					= TCategComptable::getStructureCodeComptable();
 		$this->TResultat['libelle']	= $this->label;
-		$this->TResultat['date'] 	= date('d/m/Y',$this->date_debut);
-		$this->TResultat['year'] 	= date('Y',$this->date_debut);
-		$this->TResultat['month'] 	= (int) date('m',$this->date_debut);
+		$this->TResultat['date_debut'] 	= date('d/m/Y',$this->date_debut);
+		$this->TResultat['year_debut'] 	= date('Y',$this->date_debut);
+		$this->TResultat['month_debut'] 	= (int) date('m',$this->date_debut);
+		$this->TResultat['date_fin'] 	= date('d/m/Y',$this->date_fin);
+		$this->TResultat['year_fin'] 	= date('Y',$this->date_fin);
+		$this->TResultat['month_fin'] 	= (int) date('m',$this->date_fin);
 		
 		foreach ($TDate as $year=>$TMonth) {
 			foreach($TMonth as $iMonth=>$month) {
@@ -98,7 +101,7 @@ class TInsurance extends TObjetStd {
 	function getAmountForCode($code_compta) {
 		
 		foreach($this->TInsuranceLines as &$l) {
-			if($l->code_compta == $code_compta) {
+			if($l->code_compta == $code_compta && strlen($l->code_compta) == strlen($code_compta)) {
 				return $l->percentage;
 			}
 		}
@@ -107,7 +110,7 @@ class TInsurance extends TObjetStd {
 
 	function setAmountForCode($code_compta,$percentage) {
 		foreach($this->TInsuranceLines as $k=> &$l) {
-			if($l->code_compta == $code_compta) {
+			if($l->code_compta == $code_compta && strlen($l->code_compta) == strlen($code_compta)) {
 				$l->percentage = $percentage;	
 				return $k;		
 			}

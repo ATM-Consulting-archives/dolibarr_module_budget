@@ -14,9 +14,16 @@ Revu = Revu (inactif)
 ShowDifferenceBetweenBudgectAndReal=Voir le résultat différentiel entre le Budget et le Réel
 
 Reopen = Réouvrir
+Encours_n1 = Encours année précédente
 
 ListBudget = Liste des budgets
 CreateBudget = Créer un budget
 
+ShoworHidedetail = Voir/Cacher le détail
+
 ListInsurance = Liste des assurances
 CreateInsurance = Créer une assurance
+Insurance = Assurance
+insurance = assurance
+
+CodeAnalytique =
