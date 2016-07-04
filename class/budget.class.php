@@ -3,8 +3,11 @@
 /**
  * Class TBudget
  */
+dol_include_once('/budget/class/insurance.class.php');
+
 class TBudget extends TObjetStd {
 	public $date_debut;
+	public $date_fin;
 	public $fk_project;
 	public $statut;
 	public $TStatut;
@@ -15,13 +18,17 @@ class TBudget extends TObjetStd {
 	public $amount;
 	public $amount_ca;
 	public $amount_depense;
+	public $amount_insurance;
 	public $amount_production;
 	public $amount_encours_n;
 	public $amount_encours_n1;
 	public $encours_taux;
+	public $encours_n1;
 	public $marge_globale;
 	public $TResultat;
 	public $TBudgetLine;
+	public $TInsurance;
+	public $PDOdb;
 	
 	function __construct() {
 		global $langs;
@@ -55,6 +62,7 @@ class TBudget extends TObjetStd {
 		
 		$this->TResultat 			= array();
 		$this->TBudgetLine 			= array();
+		$this->TInsurancePrice		= array();
 
 	}
 	
@@ -72,9 +80,47 @@ class TBudget extends TObjetStd {
 	
 	function load(&$PDOdb, $rowid) {
 		parent::load($PDOdb, $rowid);
+		$this->PDOdb = $PDOdb;
+
+		$this->load_insurance();
+		$this->load_amount();
+	}
+	
+	function load_insurance() {
+		$TInsurance			= TInsurance::getInsurance($this->PDOdb, $this->date_debut, $this->date_fin, 1);
+		$this->TInsurance	= $TInsurance;
+		$TPercentage		= array();
 		
+		$year 	= date('Y',$this->date_debut);
+		$month 	= (int) date('m',$this->date_debut);
+		
+		foreach ($TInsurance as $insurance){
+			if (!empty($insurance['category'])){
+				foreach ($insurance['category'] as $category){
+					foreach ($category['@bymonth'][$year][$month]['subcategory'] as $subcateg){
+						$result = 0;
+						$percentage = $subcateg['percentage'];
+						foreach($this->TBudgetLine as $line) {
+							if($line->code_compta === $subcateg['code_compta']) {
+								$result = $line->amount * ($percentage/100);
+								break;
+							}
+						}
+						$this->TInsurancePrice[$percentage] += $result;
+						$this->amount_insurance += $result;
+					}
+				}
+			}
+		}
+	}
+	
+	function load_amount() {
+		// Répartition des recettes / dépenses
 		foreach($this->TBudgetLine as &$l) {
 			$classe_compta = (int) substr($l->code_compta,0,1);
+			if($l->code_compta === '00') $classe_compta = 7;
+			else if($l->code_compta=== '000') $classe_compta = 6;
+			
 			if ($classe_compta == 6) {
 				$this->amount_depense += $l->amount;
 			}else if($classe_compta == 7) {
@@ -82,6 +128,11 @@ class TBudget extends TObjetStd {
 			}
 			$this->amount += $l->amount;
 		}
+		// Ajout total assurance
+		$this->amount_depense += $this->amount_insurance;
+		// Ajout encours
+		$this->amount_ca += $this->encours_n1;
+		
 		if($this->amount_ca != 0) {
 			// Calcul taux encours
 			$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;

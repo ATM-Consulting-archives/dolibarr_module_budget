@@ -86,7 +86,8 @@ function _action(&$PDOdb) {
 			_fiche($PDOdb, $budget);
 			break;
 		case 'new':
-		
+			$budget->date_debut = strtotime(date('Y-01-01'));
+			$budget->date_fin = strtotime(date('Y-12-31'));
 			_fiche($PDOdb, $budget, 'edit');
 			break;
 		
@@ -323,6 +324,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 				,'code_analytique'=>$select_codes_analytiques
 				,'amount_ca'=>price($budget->amount_ca, 0, '',1, -1, 2)
 				,'amount_production'=>price($budget->amount_production, 0, '',1, -1, 2)
+				,'amount_insurance'=>price($budget->amount_insurance, 0, '',1, -1, 2)
 				,'encours_taux'=>round($budget->encours_taux,4)*100
 				,'amount_encours_n'=>price($budget->amount_encours_n, 0, '',1, -1, 2)
 				,'amount_encours_n1'=>price($budget->amount_encours_n1, 0, '',1, -1, 2)
