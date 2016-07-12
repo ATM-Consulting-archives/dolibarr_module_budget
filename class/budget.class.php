@@ -98,8 +98,8 @@ class TBudget extends TObjetStd {
 			if (!empty($insurance['category'])){
 				foreach ($insurance['category'] as $category){
 					foreach ($category['@bymonth'][$year][$month]['subcategory'] as $subcateg){
-						$result = 0;
-						$percentage = $subcateg['percentage'];
+						$result 	= 0;
+						$percentage	= $subcateg['percentage'];
 						foreach($this->TBudgetLine as $line) {
 							if($line->code_compta === $subcateg['code_compta']) {
 								$result = $line->amount * ($percentage/100);
@@ -172,6 +172,64 @@ class TBudget extends TObjetStd {
 				}
 			}
 		}
+		$this->fetch_encours();
+		$this->fetch_insurance();
+		$this->fetch_production_depenses();
+	}
+
+	function fetch_encours() {
+		$year 		= date('Y',$this->date_debut);
+		$month 		= (int) date('m',$this->date_debut);
+		
+		$label 		= 'Encours';
+		$price 		= $this->encours_n1;
+		$subcateg 	= $label.' '.$year;
+		$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
+		$this->TResultat['category'][_get_key($label)]['code_budget'] = null;
+		$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] = $price;
+		
+		$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($subcateg)]['libelle'] = $subcateg;
+		$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($subcateg)]['code_compta'] = null;
+		$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($subcateg)]['price'] = $price;
+	}
+
+	function fetch_insurance() {
+		$year 		= date('Y',$this->date_debut);
+		$month 		= (int) date('m',$this->date_debut);
+		$label 		= 'Assurances';
+		foreach($this->TInsurancePrice as $percentage => $price) {
+			$nom	= 'Assurances '.$percentage.'%';
+			$this->TResultat['category'][_get_key($label)]['libelle'] = $label;
+			$this->TResultat['category'][_get_key($label)]['code_budget'] = null;
+			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['price'] += $price;
+			
+			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($nom)]['libelle'] = $nom;
+			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($nom)]['code_compta'] = null;
+			$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$month]['subcategory'][_get_key($nom)]['price'] = $price;
+		}
+	}
+
+	function fetch_production_depenses() {
+		$year 		= date('Y',$this->date_debut);
+		$month 		= (int) date('m',$this->date_debut);
+		
+		$categ1		= 'CA';
+		$categ2		= 'Encours';
+		$categ3		= 'Achats consommés';
+		$categ4		= 'Assurances';
+		
+		$categRes1 	= 'Total Production';
+		$categRes2	= 'Total Dépenses';
+		$categRes3	= 'Marge globale';
+		
+		$total1		= $this->TResultat['category'][_get_key($categ1)]['@bymonth'][$year][$month]['price'] + $this->TResultat['category'][_get_key($categ2)]['@bymonth'][$year][$month]['price'];
+		$total2		= $this->TResultat['category'][_get_key($categ3)]['@bymonth'][$year][$month]['price'] + $this->TResultat['category'][_get_key($categ4)]['@bymonth'][$year][$month]['price'];
+		
+		$this->TResultat['category'][_get_key($categRes1)]['@bymonth'][$year][$month]['price'] = $total1;
+		$this->TResultat['category'][_get_key($categRes2)]['@bymonth'][$year][$month]['price'] = $total2;
+		
+		$total3 = $total1 - $total2;
+		$this->TResultat['category'][_get_key($categRes3)]['@bymonth'][$year][$month]['price'] = $total3;
 	}
 	
 	function libStatut() {
