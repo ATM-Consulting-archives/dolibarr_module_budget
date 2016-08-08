@@ -27,3 +27,5 @@ Insurance = Assurance
 insurance = assurance
 
 CodeAnalytique =
+encours_validate=Encours validé
+encours_deleted=Encours supprimé

@@ -23,7 +23,7 @@ class TEncours extends TObjetStd {
 	
 	function load_for_date(&$PDOdb, $identifiant=null, $type_object='project', $year, $month) {
 		
-		$month  = str_pad( $month, 2, '0', STR_PAD_LEFT) ;-
+		$month  = str_pad( $month, 2, '0', STR_PAD_LEFT);
 		$date_encours = $year.''.$month.'01';
 		$sql = 'SELECT rowid';
 		$sql.=' FROM '.MAIN_DB_PREFIX.'sig_encours';

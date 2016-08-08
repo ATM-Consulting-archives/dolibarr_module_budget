@@ -41,6 +41,8 @@ function _action(&$PDOdb) {
 			$encours->price = $price;
 			$encours->date_encours = $date_encours;
 			$encours->save($PDOdb);
+			
+			setEventMessages('encours_validate', array());
 			break;
 		case 'delete_encours':
 			$identifiant=GETPOST('identifiant');
@@ -52,6 +54,7 @@ function _action(&$PDOdb) {
 			$encours->load_for_date($PDOdb, $identifiant, $type_object, $year, $month);
 			
 			$encours->delete($PDOdb);
+			setEventMessages('encours_deleted', array());
 			break;
 	}
 }
