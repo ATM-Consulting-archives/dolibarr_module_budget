@@ -275,7 +275,7 @@ function _fiche(&$PDOdb, &$budget, $mode='view')
 		if($budget->statut != 4)$TButton[] = '<a class="butAction" href="?action=revu&id='.$budget->getId().'">'.$langs->trans('Disable').'</a>';
 	
 		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=valid&id='.$budget->getId().'">'.$langs->trans('Valid').'</a>';
-		if($budget->statut == 0)$TButton[] = '<a class="butAction" href="?action=reject&id='.$budget->getId().'">'.$langs->trans('Refuser').'</a>';
+		if($budget->statut == 0)$TButton[] = '<a class="butActionDelete" href="?action=reject&id='.$budget->getId().'">'.$langs->trans('Refuser').'</a>';
 		
 		$TButton[] = '<a class="butActionDelete" onclick="return confirm(\'Êtes vous certain ?\')" href="?action=delete&id='.$budget->getId().'">'.$langs->trans('Delete').'</a>';
 		
