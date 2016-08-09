@@ -16,8 +16,7 @@ class TBudget extends TObjetStd {
 	public $amount_ca;
 	public $amount_depense;
 	public $amount_production;
-	public $amount_encours_n;
-	public $amount_encours_n1;
+	public $encours_n1;
 	public $encours_taux;
 	public $marge_globale;
 	public $TResultat;
@@ -48,10 +47,9 @@ class TBudget extends TObjetStd {
 		$this->amount_ca 			= 0;
 		$this->amount_production 	= 0;
 		$this->amount_depense 		= 0;
-		$this->amount_encours_n 	= 0;
-		$this->amount_encours_n1 	= 0;
+		
+		$this->encours_n1 	= 0;
 		$this->encours_taux 		= 0;
-		$this->mage_globale 		= 0;
 		
 		$this->TResultat 			= array();
 		$this->TBudgetLine 			= array();
@@ -84,7 +82,7 @@ class TBudget extends TObjetStd {
 		}
 		if($this->amount_ca != 0) {
 			// Calcul taux encours
-			$t_production = $this->amount_ca + $this->amount_encours_n + $this->amount_encours_n1;
+			$t_production = $this->amount_ca + $this->encours_n1;
 			$t_marge = $t_production - $this->amount_depense;
 			
 			$this->encours_taux = $this->amount_depense / $t_production;
@@ -121,6 +119,12 @@ class TBudget extends TObjetStd {
 				}
 			}
 		}
+
+		$this->TResultat['category']['Encours']['@bymonth'][$year][$month]['subcategory']['Encours'.($year-1)]['price'] = $this->encours_n1;
+		
+		$this->TResultat['category']['TotalProduction']['@bymonth'][$year][$month]['price'] = $this->amount_ca + $this->encours_n1;
+		$this->TResultat['category']['TotalDepenses']['@bymonth'][$year][$month]['price'] = $this->amount_depense;
+		$this->TResultat['category']['MargeGlobale']['@bymonth'][$year][$month]['price'] = $this->marge_globale;
 	}
 	
 	function libStatut() {
