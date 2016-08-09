@@ -41,7 +41,6 @@ class TInsurance extends TObjetStd {
 		$sql.=" WHERE statut IN (".$statut.")";
 		$sql.=" ORDER BY date_debut ";
 		$Tab = $PDOdb->ExecuteAsArray($sql);
-		
 		$TInsurance = $TPercents = array();
 		foreach($Tab as $row) {
 			$insurance=new TInsurance;
@@ -59,13 +58,12 @@ class TInsurance extends TObjetStd {
 	
 	function fetch_resultat($date_deb, $date_fin) {
 		
-		
-		$TDate						= getTDateByDates($date_deb, $date_fin);
-		$TAllCateg 					= TCategComptable::getStructureCodeComptable();
-		$this->TResultat['libelle']	= $this->label;
+		$TDate							= getTDateByDates($date_deb, $date_fin);
+		$TAllCateg 						= TCategComptable::getStructureCodeComptable();
+		$this->TResultat['libelle']		= $this->label;
 		$this->TResultat['date_debut'] 	= date('d/m/Y',$this->date_debut);
 		$this->TResultat['year_debut'] 	= date('Y',$this->date_debut);
-		$this->TResultat['month_debut'] 	= (int) date('m',$this->date_debut);
+		$this->TResultat['month_debut']	= (int) date('m',$this->date_debut);
 		$this->TResultat['date_fin'] 	= date('d/m/Y',$this->date_fin);
 		$this->TResultat['year_fin'] 	= date('Y',$this->date_fin);
 		$this->TResultat['month_fin'] 	= (int) date('m',$this->date_fin);
@@ -79,6 +77,7 @@ class TInsurance extends TObjetStd {
 							$code_compta = $TSubCateg['code_compta'];
 							$percentage = $this->getAmountForCode($code_compta);
 							if($percentage > 0) {
+								$this->TResultat['allpercent'][$percentage] = $percentage;
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['libelle'] = $TSubCateg['label'];
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['code_compta'] = $code_compta;
 								$this->TResultat['category'][_get_key($label)]['@bymonth'][$year][$iMonth]['subcategory'][_get_key($TSubCateg['libelle'])]['percentage'] = $percentage;

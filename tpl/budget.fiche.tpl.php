@@ -61,6 +61,10 @@ function HandSValues(start=false) {
 		<td> [langs.trans(Encours_n1);strconv=no] </td>
 		<td>[budget.encours_n1;strconv=no]</td>
 	</tr>
+	<tr>
+		<td> [langs.trans(TotalInsurance);strconv=no] </td>
+		<td>[budget.amount_insurance;strconv=no]</td>
+	</tr>
 	<tr style="background:#eaf9aa;">
 		<td> [langs.trans(TotalDepense);strconv=no] </td>
 		<td>[budget.amount_depense;strconv=no]</td>
